@@ -762,7 +762,7 @@ function openHistoryDetail(sid, sdate, sdriver) {
   document.getElementById('historyDetail').style.display = 'block';
   var d = sdate ? new Date(sdate+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}) : 'No date';
   document.getElementById('hd-title').textContent = d+(sdriver?' · '+sdriver:'');
-  document.getElementById('hd-body').innerHTML = '<p class="empty-msg"><i class="ti ti-loader-2 spin"></i> Loading…</p>';
+  document.getElementById('hd-body').innerHTML = '<p class="empty-msg">Looking for session: ' + sid + '</p>';
   apiRead('action=getLocations&sessionId='+sid)
     .then(function(rows){
       if (!Array.isArray(rows)||rows.length<2){document.getElementById('hd-body').innerHTML='<p class="empty-msg">No locations found.</p>';return;}
