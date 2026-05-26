@@ -730,9 +730,9 @@ function loadHistory() {
       var headers = rows[0];
       var sessions = rows.slice(1).map(function(r){
         var o={}; headers.forEach(function(h,i){o[h]=r[i];}); return o;
-      }).sort(function(a,b){ return new Date(b['CreatedAt'])-new Date(a['CreatedAt']); });
+      }).filter(function(s){ return s['Status'] === 'Completed'; }).sort(function(a,b){ return new Date(b['CreatedAt'])-new Date(a['CreatedAt']); });
       if (!sessions.length) {
-        document.getElementById('historyList').innerHTML = '<p class="empty-msg">No sessions yet.</p>';
+        document.getElementById('historyList').innerHTML = '<p class="empty-msg">No completed sessions yet. Complete a drive-about to see it here.</p>';
         return;
       }
       document.getElementById('historyList').innerHTML = sessions.map(function(s){
@@ -762,7 +762,7 @@ function openHistoryDetail(sid, sdate, sdriver) {
   document.getElementById('historyDetail').style.display = 'block';
   var d = sdate ? new Date(sdate+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}) : 'No date';
   document.getElementById('hd-title').textContent = d+(sdriver?' · '+sdriver:'');
-  document.getElementById('hd-body').innerHTML = '<p class="empty-msg">Looking for session: ' + sid + '</p>';
+  document.getElementById('hd-body').innerHTML = '<p class="empty-msg"><i class="ti ti-loader-2 spin"></i> Loading…</p>';
   apiRead('action=getLocations&sessionId='+sid)
     .then(function(rows){
       if (!Array.isArray(rows)||rows.length<2){document.getElementById('hd-body').innerHTML='<p class="empty-msg">No locations found.</p>';return;}
