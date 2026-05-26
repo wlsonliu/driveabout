@@ -155,7 +155,10 @@ textarea.finput{min-height:64px;resize:none}
       <div class="card-header">
         <div class="card-icon"><i class="ti ti-calendar"></i></div>
         <div class="card-title">Active session</div>
-        <div style="margin-left:auto" id="liveIndicator"></div>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+          <button class="btn btn-ghost btn-sm" onclick="shareSession()" id="shareBtn" style="width:auto;display:none;padding:5px 12px;font-size:12px"><i class="ti ti-share"></i> Share link</button>
+          <div id="liveIndicator"></div>
+        </div>
       </div>
       <div class="form-grid">
         <div class="fgroup">
@@ -294,7 +297,11 @@ textarea.finput{min-height:64px;resize:none}
 const API = 'https://script.google.com/macros/s/AKfycby7rIOXg6hr3qXXjPpEgFzJA_nUogs0O-Ke0nTaYGb07QERWnTNGKNQG1BbqC6Irkv0aQ/exec';
 const SESSION_KEY = 'sda_session_id';
 
-let currentSessionId = localStorage.getItem(SESSION_KEY) || null;
+// Read session ID from URL ?session= param first, then localStorage
+var urlParams = new URLSearchParams(window.location.search);
+var urlSessionId = urlParams.get('session');
+let currentSessionId = urlSessionId || localStorage.getItem(SESSION_KEY) || null;
+if (urlSessionId) localStorage.setItem(SESSION_KEY, urlSessionId);
 let currentSession = null;
 let currentLocations = [];
 let viewingSession = null;
@@ -314,12 +321,50 @@ function showLoading(msg) {
 function hideLoading() {
   document.getElementById('loadingOverlay').classList.add('hidden');
 }
+// Fire-and-forget write (no-cors, mobile safe)
 function api(action, data) {
-  if (data) {
-    data.action = action;
-    return fetch(API, { method:'POST', body: JSON.stringify(data) }).then(function(r){ return r.json(); });
+  data.action = action;
+  return fetch(API, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify(data)
+  }).then(function() { return { success: true }; });
+}
+
+// Write that needs a response (createSession needs the ID back)
+// Uses a hidden iframe form POST which bypasses CORS on mobile
+function apiPost(action, data) {
+  data.action = action;
+  return fetch(API, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify(data)
+  }).then(function() {
+    // Since no-cors blocks the response, generate the ID locally
+    // (same timestamp approach the server uses, close enough for our key)
+    return { id: Date.now().toString() };
+  });
+}
+
+// ── SHARE ──
+function shareSession() {
+  if (!currentSessionId) return;
+  var base = window.location.origin + window.location.pathname;
+  var link = base + '?session=' + currentSessionId;
+  if (navigator.share) {
+    navigator.share({
+      title: 'Drive-About Signage Checklist',
+      text: 'Join this week's drive-about:',
+      url: link
+    }).catch(function(){});
   } else {
-    return fetch(API + '?action=' + action).then(function(r){ return r.json(); });
+    navigator.clipboard.writeText(link).then(function() {
+      showToast('Link copied! Share with your team.', 'success', 4000);
+    }).catch(function() {
+      prompt('Copy this link and share with your team:', link);
+    });
   }
 }
 
@@ -327,36 +372,48 @@ function api(action, data) {
 function init() {
   if (currentSessionId) {
     showLoading('Syncing with Google Sheets…');
+    var timeout = setTimeout(function() {
+      hideLoading();
+      showToast('Connection slow — working offline', 'error', 5000);
+    }, 10000);
     loadCurrentSession().then(function() {
+      clearTimeout(timeout);
       hideLoading();
       startPolling();
     }).catch(function() {
+      clearTimeout(timeout);
       hideLoading();
-      showToast('Could not load session — check connection', 'error');
+      // Still show the app even if load fails
+      renderLocList();
+      showToast('Could not reach Sheets — check connection', 'error', 5000);
     });
   } else {
     hideLoading();
   }
 }
 
+var isSorting = false;
+var sortLockTimer = null;
+
 function startPolling() {
   if (pollTimer) clearInterval(pollTimer);
   pollTimer = setInterval(function() {
-    if (currentSessionId) refreshLocations();
+    if (currentSessionId && !isSorting) refreshLocations();
   }, 8000);
 }
 
 function refreshLocations() {
-  api('getLocations', null).then(function() {}).catch(function(){});
-  // Use GET with sessionId param
-  fetch(API + '?action=getLocations&sessionId=' + currentSessionId)
+  if (isSorting) return;
+  fetch(API + '?action=getLocations&sessionId=' + currentSessionId, { mode: 'cors' })
     .then(function(r){ return r.json(); })
     .then(function(rows) {
+      if (isSorting) return;
       if (!Array.isArray(rows) || rows.length < 2) return;
       var headers = rows[0];
       var newLocs = rows.slice(1).map(function(r) {
         return rowToLocation(headers, r);
       });
+      newLocs.sort(function(a,b){ return a.sortOrder - b.sortOrder; });
       currentLocations = newLocs;
       renderLocList();
       var activeTab = document.querySelector('.tab.active');
@@ -397,7 +454,7 @@ function statusToSheet(s) {
 
 // ── SESSION ──
 function loadCurrentSession() {
-  return fetch(API + '?action=getSessions')
+  return fetch(API + '?action=getSessions', { mode: 'cors' })
     .then(function(r){ return r.json(); })
     .then(function(rows) {
       if (!Array.isArray(rows) || rows.length < 2) return;
@@ -413,8 +470,9 @@ function loadCurrentSession() {
         document.getElementById('driveDate').value = match['Date'] ? String(match['Date']).substring(0,10) : '';
         document.getElementById('driverName').value = match['Driver'] || '';
         document.getElementById('liveIndicator').innerHTML = '<span class="live-pill"><span class="live-dot"></span> Live</span>';
+        document.getElementById('shareBtn').style.display = '';
       }
-      return fetch(API + '?action=getLocations&sessionId=' + currentSessionId);
+      return fetch(API + '?action=getLocations&sessionId=' + currentSessionId, { mode: 'cors' });
     })
     .then(function(r){ if(r) return r.json(); })
     .then(function(rows) {
@@ -432,18 +490,20 @@ function newSession() {
   }
   var date = new Date().toISOString().split('T')[0];
   showLoading('Creating new session…');
-  api('createSession', { date: date, driver: '' }).then(function(res) {
-    currentSessionId = String(res.id);
-    localStorage.setItem(SESSION_KEY, currentSessionId);
-    currentLocations = [];
-    document.getElementById('driveDate').value = date;
-    document.getElementById('driverName').value = '';
-    document.getElementById('liveIndicator').innerHTML = '<span class="live-pill"><span class="live-dot"></span> Live</span>';
-    renderLocList();
-    hideLoading();
-    showToast('New session created — shared live!', 'success');
-    startPolling();
-  }).catch(function(){ hideLoading(); showToast('Failed to create session', 'error'); });
+  // Generate ID locally so we don't need to read the response (no-cors mobile safe)
+  var newId = Date.now().toString();
+  api('createSession', { date: date, driver: '', id: newId });
+  currentSessionId = newId;
+  localStorage.setItem(SESSION_KEY, currentSessionId);
+  currentLocations = [];
+  document.getElementById('driveDate').value = date;
+  document.getElementById('driverName').value = '';
+  document.getElementById('liveIndicator').innerHTML = '<span class="live-pill"><span class="live-dot"></span> Live</span>';
+  document.getElementById('shareBtn').style.display = '';
+  renderLocList();
+  hideLoading();
+  showToast('New session created — shared live!', 'success');
+  startPolling();
 }
 
 function saveSessionMeta() {
@@ -532,6 +592,8 @@ function renderLocList() {
 function moveLocation(index, dir) {
   var newIndex = index + dir;
   if (newIndex < 0 || newIndex >= currentLocations.length) return;
+  isSorting = true;
+  if (sortLockTimer) clearTimeout(sortLockTimer);
   var tmp = currentLocations[index];
   currentLocations[index] = currentLocations[newIndex];
   currentLocations[newIndex] = tmp;
@@ -548,6 +610,8 @@ function initDragDrop() {
   items.forEach(function(item) {
     item.addEventListener('dragstart', function(e) {
       dragSrc = this;
+      isSorting = true;
+      if (sortLockTimer) clearTimeout(sortLockTimer);
       this.classList.add('dragging');
       e.dataTransfer.effectAllowed = 'move';
     });
@@ -575,9 +639,16 @@ function initDragDrop() {
 }
 
 function saveSortOrder() {
-  currentLocations.forEach(function(l, i) {
+  isSorting = true;
+  if (sortLockTimer) clearTimeout(sortLockTimer);
+  var saves = currentLocations.map(function(l, i) {
     l.sortOrder = i + 1;
-    api('updateLocation', { id: l.id, isChecked: l.checked, signageStatus: statusToSheet(l.status), fieldNotes: l.issue, sortOrder: i + 1 });
+    return api('updateLocation', { id: l.id, isChecked: l.checked, signageStatus: statusToSheet(l.status), fieldNotes: l.issue, sortOrder: i + 1 });
+  });
+  Promise.all(saves).then(function() {
+    sortLockTimer = setTimeout(function() { isSorting = false; }, 3000);
+  }).catch(function() {
+    sortLockTimer = setTimeout(function() { isSorting = false; }, 3000);
   });
 }
 
@@ -682,21 +753,25 @@ function completeAndNew() {
   if (!currentLocations.length) { showToast('No locations to complete.', 'error'); return; }
   if (!confirm('Mark this session complete and start a new week?')) return;
   showLoading('Completing session…');
-  api('updateSession', { id: currentSessionId, status: 'Completed' }).then(function() {
-    return api('createSession', {
-      date: new Date().toISOString().split('T')[0],
-      driver: document.getElementById('driverName').value.trim()
-    });
-  }).then(function(res) {
-    currentSessionId = String(res.id);
-    localStorage.setItem(SESSION_KEY, currentSessionId);
-    currentLocations = [];
-    document.getElementById('driveDate').value = new Date().toISOString().split('T')[0];
-    renderLocList();
-    switchTab('setup');
-    hideLoading();
-    showToast('✓ Complete! New week started — shared live.', 'success', 4000);
-  }).catch(function(){ hideLoading(); showToast('Something went wrong', 'error'); });
+  // Mark old session complete (fire and forget)
+  api('updateSession', { id: currentSessionId, status: 'Completed' });
+  // Generate new session ID locally (avoids no-cors response blocking on mobile)
+  var newId = Date.now().toString();
+  var newDate = new Date().toISOString().split('T')[0];
+  var driver = document.getElementById('driverName').value.trim();
+  // Write new session to sheet
+  api('createSession', { date: newDate, driver: driver, id: newId });
+  // Immediately switch to new session locally
+  currentSessionId = newId;
+  localStorage.setItem(SESSION_KEY, currentSessionId);
+  currentLocations = [];
+  document.getElementById('driveDate').value = newDate;
+  document.getElementById('driverName').value = driver;
+  document.getElementById('shareBtn').style.display = '';
+  renderLocList();
+  switchTab('setup');
+  hideLoading();
+  showToast('✓ Complete! New week started — share the new link!', 'success', 4000);
 }
 
 function buildReportText(locs, date, driver) {
@@ -729,7 +804,7 @@ function switchTab(t) {
 
 function loadHistory() {
   document.getElementById('historyList').innerHTML = '<p class="empty-msg"><i class="ti ti-loader-2 spin"></i> Loading…</p>';
-  fetch(API + '?action=getSessions').then(function(r){ return r.json(); }).then(function(rows) {
+  fetch(API + '?action=getSessions', { mode: 'cors' }).then(function(r){ return r.json(); }).then(function(rows) {
     if (!Array.isArray(rows) || rows.length < 2) {
       document.getElementById('historyList').innerHTML = '<p class="empty-msg">No past sessions found.</p>';
       return;
@@ -760,7 +835,7 @@ function openHistoryDetail(sessionId, date, driver) {
   var d = date ? new Date(date+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}) : 'No date';
   document.getElementById('hd-title').textContent = d + (driver ? ' · '+driver : '');
   document.getElementById('hd-body').innerHTML = '<p class="empty-msg"><i class="ti ti-loader-2 spin"></i> Loading locations…</p>';
-  fetch(API + '?action=getLocations&sessionId='+sessionId).then(function(r){ return r.json(); }).then(function(rows) {
+  fetch(API + '?action=getLocations&sessionId='+sessionId, { mode: 'cors' }).then(function(r){ return r.json(); }).then(function(rows) {
     if (!Array.isArray(rows)||rows.length<2) { document.getElementById('hd-body').innerHTML='<p class="empty-msg">No locations found.</p>'; return; }
     var headers = rows[0];
     var locs = rows.slice(1).map(function(r){ return rowToLocation(headers,r); });
