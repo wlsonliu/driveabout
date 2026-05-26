@@ -134,11 +134,6 @@ textarea.finput{min-height:64px;resize:none}
 </head>
 <body>
 
-<div id="loadingOverlay" class="loading-overlay">
-  <div class="loading-spinner"></div>
-  <div class="loading-text" id="loadingText">Connecting to Google Sheets…</div>
-</div>
-
 <div id="toast" class="toast"></div>
 
 <div class="app">
@@ -370,25 +365,18 @@ function shareSession() {
 
 // ── INIT ──
 function init() {
+  // Always hide loader and show app immediately
+  hideLoading();
+  document.getElementById('shareBtn').style.display = currentSessionId ? '' : 'none';
+
   if (currentSessionId) {
-    showLoading('Syncing with Google Sheets…');
-    var timeout = setTimeout(function() {
-      hideLoading();
-      showToast('Connection slow — working offline', 'error', 5000);
-    }, 10000);
+    // Try to load from Sheets in background — show app regardless
     loadCurrentSession().then(function() {
-      clearTimeout(timeout);
-      hideLoading();
       startPolling();
     }).catch(function() {
-      clearTimeout(timeout);
-      hideLoading();
-      // Still show the app even if load fails
       renderLocList();
-      showToast('Could not reach Sheets — check connection', 'error', 5000);
+      showToast('Could not reach Sheets — check connection', 'error', 4000);
     });
-  } else {
-    hideLoading();
   }
 }
 
@@ -489,7 +477,6 @@ function newSession() {
     if (!confirm('Start a new week? The current session stays in History.')) return;
   }
   var date = new Date().toISOString().split('T')[0];
-  showLoading('Creating new session…');
   // Generate ID locally so we don't need to read the response (no-cors mobile safe)
   var newId = Date.now().toString();
   api('createSession', { date: date, driver: '', id: newId });
@@ -501,7 +488,6 @@ function newSession() {
   document.getElementById('liveIndicator').innerHTML = '<span class="live-pill"><span class="live-dot"></span> Live</span>';
   document.getElementById('shareBtn').style.display = '';
   renderLocList();
-  hideLoading();
   showToast('New session created — shared live!', 'success');
   startPolling();
 }
@@ -752,7 +738,6 @@ function renderReport(locs) {
 function completeAndNew() {
   if (!currentLocations.length) { showToast('No locations to complete.', 'error'); return; }
   if (!confirm('Mark this session complete and start a new week?')) return;
-  showLoading('Completing session…');
   // Mark old session complete (fire and forget)
   api('updateSession', { id: currentSessionId, status: 'Completed' });
   // Generate new session ID locally (avoids no-cors response blocking on mobile)
@@ -770,7 +755,6 @@ function completeAndNew() {
   document.getElementById('shareBtn').style.display = '';
   renderLocList();
   switchTab('setup');
-  hideLoading();
   showToast('✓ Complete! New week started — share the new link!', 'success', 4000);
 }
 
