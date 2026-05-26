@@ -29,22 +29,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .card-icon{width:30px;height:30px;background:var(--red-light);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .card-icon i{font-size:16px;color:var(--red)}
 .card-icon.blue{background:var(--blue-bg)}.card-icon.blue i{color:var(--blue)}
-.card-icon.green{background:var(--green-bg)}.card-icon.green i{color:var(--green)}
 .card-title{font-size:14px;font-weight:700;color:var(--text)}
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
 .form-grid.full{grid-template-columns:1fr}
 .fgroup{display:flex;flex-direction:column;gap:5px}
 .flabel{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em}
-.finput{font-size:14px;color:var(--text);background:#fafafa;border:1.5px solid var(--border-strong);border-radius:9px;padding:9px 12px;width:100%;transition:border-color 0.15s,background 0.15s;outline:none}
+.finput{font-size:14px;color:var(--text);background:#fafafa;border:1.5px solid var(--border-strong);border-radius:9px;padding:9px 12px;width:100%;transition:border-color 0.15s;outline:none}
 .finput:focus{border-color:var(--red);background:#fff}
 .finput::placeholder{color:var(--hint)}
 textarea.finput{min-height:64px;resize:none}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px 18px;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all 0.15s;letter-spacing:0.01em}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px 18px;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all 0.15s}
 .btn i{font-size:15px}
 .btn-red{background:var(--red);color:#fff;width:100%}
 .btn-red:hover{background:var(--red-dark)}.btn-red:active{transform:scale(0.98)}
-.btn-green{background:var(--green);color:#fff;width:100%}
-.btn-green:hover{background:#047857}
 .btn-ghost{background:var(--card);border:1.5px solid var(--border-strong);color:var(--muted)}
 .btn-ghost:hover{background:var(--bg)}
 .btn-sm{padding:7px 14px;font-size:12px;border-radius:8px;width:auto}
@@ -52,11 +49,10 @@ textarea.finput{min-height:64px;resize:none}
 .btn-row .btn{flex:1}
 .btn:disabled{opacity:0.5;cursor:not-allowed}
 .loc-list{display:flex;flex-direction:column;gap:8px}
-.loc-item{background:#fafafa;border:1.5px solid var(--border);border-radius:10px;padding:11px 14px;display:flex;align-items:center;gap:12px;transition:box-shadow 0.15s,border-color 0.15s;user-select:none}
-.loc-item.dragging{opacity:0.4;border-color:var(--red)}
-.loc-item.drag-over{border-color:var(--red);box-shadow:0 0 0 2px rgba(140,21,21,0.15);background:#fff}
-.drag-handle{display:flex;flex-direction:column;gap:3px;cursor:grab;padding:4px 2px;flex-shrink:0;opacity:0.4}
-.drag-handle:active{cursor:grabbing}
+.loc-item{background:#fafafa;border:1.5px solid var(--border);border-radius:10px;padding:11px 14px;display:flex;align-items:center;gap:12px;user-select:none;transition:box-shadow 0.15s}
+.loc-item.drag-over{border-color:var(--red);box-shadow:0 0 0 2px rgba(140,21,21,0.15)}
+.loc-item.dragging{opacity:0.4}
+.drag-handle{display:flex;flex-direction:column;gap:3px;cursor:grab;padding:4px 2px;flex-shrink:0;opacity:0.35}
 .drag-handle span{display:block;width:16px;height:2px;background:var(--muted);border-radius:2px}
 .loc-num{width:28px;height:28px;border-radius:50%;background:var(--red);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .loc-info{flex:1;min-width:0}
@@ -85,8 +81,7 @@ textarea.finput{min-height:64px;resize:none}
 .cl-name{font-size:14px;font-weight:600;color:var(--text)}
 .cl-sub{font-size:12px;color:var(--muted);margin-top:2px}
 .cl-actions{display:flex;gap:8px}
-.icon-btn{background:var(--card);border:1.5px solid var(--border);color:var(--muted);border-radius:8px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:all 0.15s}
-.icon-btn:hover{background:var(--bg)}
+.icon-btn{background:var(--card);border:1.5px solid var(--border);color:var(--muted);border-radius:8px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px}
 .chk-btn{width:34px;height:34px;border-radius:50%;border:2px solid var(--border-strong);background:var(--card);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:17px;color:var(--muted);transition:all 0.15s}
 .chk-btn.done{background:var(--green);border-color:var(--green);color:#fff}
 .cl-expand{display:none;padding:13px 14px;border-top:1px solid var(--border);background:#fafafa}
@@ -108,31 +103,20 @@ textarea.finput{min-height:64px;resize:none}
 .badge-bad{background:var(--red-err-bg);color:var(--red-err-text)}
 .badge-skip{background:var(--bg);color:var(--muted)}
 .empty-msg{text-align:center;color:var(--hint);font-size:13px;padding:1.5rem}
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);padding:12px 22px;border-radius:10px;font-size:14px;font-weight:600;color:#fff;z-index:999;opacity:0;transition:opacity 0.3s;pointer-events:none;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,0.15)}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);padding:12px 22px;border-radius:10px;font-size:14px;font-weight:600;color:#fff;z-index:999;opacity:0;transition:opacity 0.3s;pointer-events:none;white-space:nowrap}
 .toast.show{opacity:1}
 .toast.success{background:#059669}.toast.error{background:#dc2626}.toast.info{background:#1d4ed8}
-.spin{animation:spin 1s linear infinite;display:inline-block}
-@keyframes spin{to{transform:rotate(360deg)}}
 .live-pill{display:inline-flex;align-items:center;gap:5px;background:var(--green-bg);color:var(--green-text);border-radius:20px;padding:4px 12px;font-size:12px;font-weight:700}
 .live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.spin{animation:spin 1s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
 .history-item{background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:13px 16px;margin-bottom:10px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color 0.15s}
 .history-item:hover{border-color:var(--red)}
-.history-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-.history-info{flex:1;min-width:0}
-.history-date{font-size:14px;font-weight:600;color:var(--text)}
-.history-meta{font-size:12px;color:var(--muted);margin-top:2px}
-.sheets-pill{display:inline-flex;align-items:center;gap:5px;background:var(--green-bg);color:var(--green-text);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700}
-.loading-text{font-size:14px;font-weight:600;color:var(--muted)}
-.session-selector{display:flex;gap:8px;align-items:center;margin-bottom:1rem}
-.session-selector select{flex:1;font-size:14px;color:var(--text);background:var(--card);border:1.5px solid var(--border-strong);border-radius:9px;padding:9px 12px;outline:none}
-.session-selector select:focus{border-color:var(--red)}
 </style>
 </head>
 <body>
-
 <div id="toast" class="toast"></div>
-
 <div class="app">
   <div class="tabs">
     <button class="tab active" onclick="switchTab('setup')"><i class="ti ti-settings"></i> Setup</button>
@@ -148,7 +132,7 @@ textarea.finput{min-height:64px;resize:none}
         <div class="card-icon"><i class="ti ti-calendar"></i></div>
         <div class="card-title">Active session</div>
         <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
-          <button class="btn btn-ghost btn-sm" onclick="shareSession()" id="shareBtn" style="width:auto;display:none;padding:5px 12px;font-size:12px"><i class="ti ti-share"></i> Share link</button>
+          <button class="btn btn-ghost btn-sm" id="shareBtn" onclick="shareSession()" style="display:none;width:auto;padding:5px 12px;font-size:12px"><i class="ti ti-share"></i> Share link</button>
           <div id="liveIndicator"></div>
         </div>
       </div>
@@ -164,7 +148,6 @@ textarea.finput{min-height:64px;resize:none}
       </div>
       <button class="btn btn-ghost btn-sm" onclick="saveSessionMeta()" style="width:auto"><i class="ti ti-device-floppy"></i> Save session info</button>
     </div>
-
     <div class="card">
       <div class="card-header">
         <div class="card-icon"><i class="ti ti-map-pin"></i></div>
@@ -194,9 +177,7 @@ textarea.finput{min-height:64px;resize:none}
       </div>
       <button class="btn btn-red" id="addLocBtn" onclick="addLocation()"><i class="ti ti-plus"></i> Add location</button>
     </div>
-
     <div id="locList"></div>
-
     <div class="btn-row">
       <button class="btn btn-red" onclick="startChecklist()"><i class="ti ti-player-play"></i> Start drive-about</button>
       <button class="btn btn-ghost" onclick="newSession()" style="flex:0 0 auto;width:auto;padding:11px 20px"><i class="ti ti-plus"></i> New week</button>
@@ -223,10 +204,7 @@ textarea.finput{min-height:64px;resize:none}
       <div class="stat-box"><div class="stat-num" id="st-issues" style="color:var(--amber)">0</div><div class="stat-lbl">Issues</div></div>
     </div>
     <div class="prog-wrap">
-      <div class="prog-top">
-        <span class="prog-label">Route progress</span>
-        <span class="prog-pct" id="prog-pct">0%</span>
-      </div>
+      <div class="prog-top"><span class="prog-label">Route progress</span><span class="prog-pct" id="prog-pct">0%</span></div>
       <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
     </div>
     <div id="checkItems"></div>
@@ -258,10 +236,10 @@ textarea.finput{min-height:64px;resize:none}
     <div class="card" id="historyCard">
       <div class="card-header">
         <div class="card-icon blue"><i class="ti ti-history"></i></div>
-        <div class="card-title">Past drive-abouts</div>
+        <div class="card-title">All drive-abouts</div>
         <button class="btn btn-ghost btn-sm" onclick="loadHistory()" style="margin-left:auto;width:auto"><i class="ti ti-refresh"></i></button>
       </div>
-      <div id="historyList"><p class="empty-msg">Loading…</p></div>
+      <div id="historyList"><p class="empty-msg">Click refresh to load sessions.</p></div>
     </div>
     <div id="historyDetail" style="display:none">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem">
@@ -280,24 +258,25 @@ textarea.finput{min-height:64px;resize:none}
         </div>
         <div id="hd-body"></div>
       </div>
-      <button class="btn btn-ghost" onclick="copyHistoryReport()" style="margin-top:4px"><i class="ti ti-copy"></i> Copy report</button>
+      <button class="btn btn-ghost" onclick="copyHistoryReport()"><i class="ti ti-copy"></i> Copy report</button>
     </div>
   </div>
 </div>
-
 <script>
-const API = 'https://script.google.com/macros/s/AKfycby7rIOXg6hr3qXXjPpEgFzJA_nUogs0O-Ke0nTaYGb07QERWnTNGKNQG1BbqC6Irkv0aQ/exec';
-const SESSION_KEY = 'sda_session_id';
-
-// Read session ID from URL ?session= param first, then localStorage
+var API = 'https://script.google.com/macros/s/AKfycby7rIOXg6hr3qXXjPpEgFzJA_nUogs0O-Ke0nTaYGb07QERWnTNGKNQG1BbqC6Irkv0aQ/exec';
+var SESSION_KEY = 'sda_session_id';
 var urlParams = new URLSearchParams(window.location.search);
 var urlSessionId = urlParams.get('session');
-let currentSessionId = urlSessionId || localStorage.getItem(SESSION_KEY) || null;
+var currentSessionId = urlSessionId || localStorage.getItem(SESSION_KEY) || null;
 if (urlSessionId) localStorage.setItem(SESSION_KEY, urlSessionId);
-let currentSession = null;
-let currentLocations = [];
-let viewingSession = null;
-let pollTimer = null;
+
+var currentLocations = [];
+var viewingSession = null;
+var pollTimer = null;
+var isSorting = false;
+var sortLockTimer = null;
+// Track which cards are expanded by location ID
+var expandedIds = {};
 
 // ── UTILS ──
 function showToast(msg, type, dur) {
@@ -306,300 +285,180 @@ function showToast(msg, type, dur) {
   t.textContent = msg; t.className = 'toast '+type; t.classList.add('show');
   setTimeout(function(){ t.classList.remove('show'); }, dur);
 }
-function showLoading(msg) { /* no-op — app loads instantly */ }
-function hideLoading() { /* no-op */ }
-// Fire-and-forget write (no-cors, mobile safe)
-function api(action, data) {
+function apiWrite(action, data) {
   data.action = action;
   return fetch(API, {
-    method: 'POST',
-    mode: 'no-cors',
-    headers: { 'Content-Type': 'text/plain' },
+    method: 'POST', mode: 'no-cors',
+    headers: {'Content-Type': 'text/plain'},
     body: JSON.stringify(data)
-  }).then(function() { return { success: true }; });
+  }).then(function(){ return {success:true}; });
 }
-
-// Write that needs a response (createSession needs the ID back)
-// Uses a hidden iframe form POST which bypasses CORS on mobile
-function apiPost(action, data) {
-  data.action = action;
-  return fetch(API, {
-    method: 'POST',
-    mode: 'no-cors',
-    headers: { 'Content-Type': 'text/plain' },
-    body: JSON.stringify(data)
-  }).then(function() {
-    // Since no-cors blocks the response, generate the ID locally
-    // (same timestamp approach the server uses, close enough for our key)
-    return { id: Date.now().toString() };
-  });
-}
-
-// ── SHARE ──
-function shareSession() {
-  if (!currentSessionId) return;
-  var base = window.location.origin + window.location.pathname;
-  var link = base + '?session=' + currentSessionId;
-  if (navigator.share) {
-    navigator.share({
-      title: 'Drive-About Signage Checklist',
-      text: 'Join this week drive-about:',
-      url: link
-    }).catch(function(){});
-  } else {
-    navigator.clipboard.writeText(link).then(function() {
-      showToast('Link copied! Share with your team.', 'success', 4000);
-    }).catch(function() {
-      prompt('Copy this link and share with your team:', link);
-    });
-  }
+function apiRead(params) {
+  return fetch(API + '?' + params, {mode:'cors'}).then(function(r){ return r.json(); });
 }
 
 // ── INIT ──
 function init() {
-  // Always hide loader and show app immediately
-  hideLoading();
-  document.getElementById('shareBtn').style.display = currentSessionId ? '' : 'none';
-
   if (currentSessionId) {
-    // Try to load from Sheets in background — show app regardless
-    loadCurrentSession().then(function() {
-      startPolling();
-    }).catch(function() {
-      renderLocList();
-      showToast('Could not reach Sheets — check connection', 'error', 4000);
-    });
+    document.getElementById('shareBtn').style.display = '';
+    document.getElementById('liveIndicator').innerHTML = '<span class="live-pill"><span class="live-dot"></span> Live</span>';
+    loadCurrentSession();
   }
 }
-
-var isSorting = false;
-var sortLockTimer = null;
 
 function startPolling() {
   if (pollTimer) clearInterval(pollTimer);
   pollTimer = setInterval(function() {
-    if (currentSessionId && !isSorting) refreshLocations();
+    if (currentSessionId && !isSorting) silentRefresh();
   }, 30000);
 }
 
-function refreshLocations() {
-  if (isSorting) return;
-  fetch(API + '?action=getLocations&sessionId=' + currentSessionId, { mode: 'cors' })
-    .then(function(r){ return r.json(); })
+// Silent refresh — NEVER re-renders checklist cards, only updates data + stats
+function silentRefresh() {
+  apiRead('action=getLocations&sessionId=' + currentSessionId)
     .then(function(rows) {
-      if (isSorting) return;
       if (!Array.isArray(rows) || rows.length < 2) return;
       var headers = rows[0];
-      var newLocs = rows.slice(1).map(function(r) {
-        return rowToLocation(headers, r);
-      });
+      var newLocs = rows.slice(1).map(function(r){ return rowToLoc(headers, r); });
       newLocs.sort(function(a,b){ return a.sortOrder - b.sortOrder; });
-
+      // Only update locations if we are NOT on the checklist tab (to avoid any interference)
       var activeTab = document.querySelector('.tab.active');
-      var onChecklist = activeTab && activeTab.textContent.trim().indexOf('Checklist') > -1;
-      var onSetup = activeTab && activeTab.textContent.trim().indexOf('Setup') > -1;
-      var onReport = activeTab && activeTab.textContent.trim().indexOf('Report') > -1;
-
-      if (onChecklist) {
-        // Merge data only — don't re-render cards (preserves open/typing state)
-        newLocs.forEach(function(newL) {
-          var existing = currentLocations.find(function(l){ return l.id === newL.id; });
-          if (existing) {
-            existing.checked = newL.checked;
-            existing.status = newL.status;
-            // Only update issue if user is not currently focused on that textarea
-            var focused = document.activeElement;
-            if (!focused || focused.id !== 'issue-'+newL.id) {
-              existing.issue = newL.issue;
-            }
-          }
-        });
-        // Just update stats, don't blow away the DOM
-        updateChecklistStats();
-      } else {
+      var onChecklist = activeTab && activeTab.textContent.indexOf('Checklist') > -1;
+      if (!onChecklist) {
         currentLocations = newLocs;
+        var onSetup = activeTab && activeTab.textContent.indexOf('Setup') > -1;
+        var onReport = activeTab && activeTab.textContent.indexOf('Report') > -1;
         if (onSetup) renderLocList();
         if (onReport) renderReport();
+      }
+      // Always update stats bar if on checklist
+      if (onChecklist) {
+        // Merge only checked/status from server, never touch DOM cards
+        newLocs.forEach(function(nl) {
+          var el = currentLocations.find(function(l){ return l.id === nl.id; });
+          if (el) { el.checked = nl.checked; el.status = nl.status; }
+        });
+        updateStats();
       }
     }).catch(function(){});
 }
 
-function updateChecklistStats() {
-  var locs = currentLocations;
-  var done = locs.filter(function(l){ return l.checked; }).length;
-  var issues = locs.filter(function(l){ return l.status==='warn'||l.status==='bad'; }).length;
-  var pct = locs.length ? Math.round(done/locs.length*100) : 0;
-  document.getElementById('cl-count').textContent = done+' / '+locs.length;
-  document.getElementById('st-total').textContent = locs.length;
-  document.getElementById('st-done').textContent = done;
-  document.getElementById('st-issues').textContent = issues;
-  document.getElementById('prog-fill').style.width = pct+'%';
-  document.getElementById('prog-pct').textContent = pct+'%';
-}
-
-function rowToLocation(headers, row) {
-  var obj = {};
-  headers.forEach(function(h, i){ obj[h] = row[i]; });
-  return {
-    id: String(obj['ID'] || ''),
-    name: obj['Name'] || '',
-    event: obj['Event'] || '',
-    spaces: obj['Spaces'] || 0,
-    notes: obj['Notes'] || '',
-    checked: obj['IsChecked'] === true || obj['IsChecked'] === 'TRUE',
-    status: statusFromSheet(obj['SignageStatus']),
-    issue: obj['FieldNotes'] || '',
-    sortOrder: parseInt(obj['SortOrder']) || 0
-  };
-}
-
-function statusFromSheet(s) {
-  if (s === 'All good') return 'ok';
-  if (s === 'Needs attention') return 'warn';
-  if (s === 'Sign missing') return 'bad';
-  return '';
-}
-
-function statusToSheet(s) {
-  if (s === 'ok') return 'All good';
-  if (s === 'warn') return 'Needs attention';
-  if (s === 'bad') return 'Sign missing';
-  return 'Not checked';
-}
-
 // ── SESSION ──
 function loadCurrentSession() {
-  return fetch(API + '?action=getSessions', { mode: 'cors' })
-    .then(function(r){ return r.json(); })
+  apiRead('action=getSessions')
     .then(function(rows) {
       if (!Array.isArray(rows) || rows.length < 2) return;
       var headers = rows[0];
-      var sessions = rows.slice(1).map(function(r) {
-        var o = {};
-        headers.forEach(function(h,i){ o[h] = r[i]; });
-        return o;
+      var sessions = rows.slice(1).map(function(r){
+        var o={}; headers.forEach(function(h,i){o[h]=r[i];}); return o;
       });
-      var match = sessions.find(function(s){ return String(s['ID']) === String(currentSessionId); });
+      var match = sessions.find(function(s){ return String(s['ID'])===String(currentSessionId); });
       if (match) {
-        currentSession = match;
         document.getElementById('driveDate').value = match['Date'] ? String(match['Date']).substring(0,10) : '';
         document.getElementById('driverName').value = match['Driver'] || '';
-        document.getElementById('liveIndicator').innerHTML = '<span class="live-pill"><span class="live-dot"></span> Live</span>';
-        document.getElementById('shareBtn').style.display = '';
       }
-      return fetch(API + '?action=getLocations&sessionId=' + currentSessionId, { mode: 'cors' });
+      return apiRead('action=getLocations&sessionId='+currentSessionId);
     })
-    .then(function(r){ if(r) return r.json(); })
     .then(function(rows) {
-      if (!Array.isArray(rows) || rows.length < 2) { currentLocations = []; renderLocList(); return; }
+      if (!rows || !Array.isArray(rows) || rows.length < 2) { renderLocList(); return; }
       var headers = rows[0];
-      currentLocations = rows.slice(1).map(function(r){ return rowToLocation(headers, r); });
-      currentLocations.sort(function(a,b){ return a.sortOrder - b.sortOrder; });
+      currentLocations = rows.slice(1).map(function(r){ return rowToLoc(headers,r); });
+      currentLocations.sort(function(a,b){ return a.sortOrder-b.sortOrder; });
       renderLocList();
-    });
+      startPolling();
+    })
+    .catch(function(){ renderLocList(); showToast('Could not reach Sheets','error',4000); });
+}
+
+function rowToLoc(headers, row) {
+  var o={}; headers.forEach(function(h,i){o[h]=row[i];}); 
+  return {
+    id: String(o['ID']||''), name: o['Name']||'', event: o['Event']||'',
+    spaces: o['Spaces']||0, notes: o['Notes']||'',
+    checked: o['IsChecked']===true||o['IsChecked']==='TRUE',
+    status: o['SignageStatus']==='All good'?'ok':o['SignageStatus']==='Needs attention'?'warn':o['SignageStatus']==='Sign missing'?'bad':'',
+    issue: o['FieldNotes']||'', sortOrder: parseInt(o['SortOrder'])||0
+  };
+}
+
+function statusToSheet(s) {
+  return s==='ok'?'All good':s==='warn'?'Needs attention':s==='bad'?'Sign missing':'Not checked';
 }
 
 function newSession() {
   if (currentLocations.length > 0) {
-    if (!confirm('Start a new week? The current session stays in History.')) return;
+    if (!confirm('Start a new week? Current session stays in History.')) return;
   }
-  var date = new Date().toISOString().split('T')[0];
-  // Generate ID locally so we don't need to read the response (no-cors mobile safe)
   var newId = Date.now().toString();
-  api('createSession', { date: date, driver: '', id: newId });
+  var date = new Date().toISOString().split('T')[0];
+  apiWrite('createSession', {id:newId, date:date, driver:''});
   currentSessionId = newId;
-  localStorage.setItem(SESSION_KEY, currentSessionId);
+  localStorage.setItem(SESSION_KEY, newId);
   currentLocations = [];
+  expandedIds = {};
   document.getElementById('driveDate').value = date;
   document.getElementById('driverName').value = '';
-  document.getElementById('liveIndicator').innerHTML = '<span class="live-pill"><span class="live-dot"></span> Live</span>';
   document.getElementById('shareBtn').style.display = '';
+  document.getElementById('liveIndicator').innerHTML = '<span class="live-pill"><span class="live-dot"></span> Live</span>';
   renderLocList();
-  showToast('New session created — shared live!', 'success');
+  showToast('New session created!', 'success');
   startPolling();
 }
 
 function saveSessionMeta() {
   if (!currentSessionId) { newSession(); return; }
-  var date = document.getElementById('driveDate').value;
-  var driver = document.getElementById('driverName').value.trim();
-  api('updateSession', { id: currentSessionId, date: date, driver: driver })
-    .then(function(){ showToast('Session info saved', 'success'); })
-    .catch(function(){ showToast('Save failed', 'error'); });
+  apiWrite('updateSession', {
+    id: currentSessionId,
+    date: document.getElementById('driveDate').value,
+    driver: document.getElementById('driverName').value.trim()
+  }).then(function(){ showToast('Saved', 'success'); });
+}
+
+function shareSession() {
+  if (!currentSessionId) return;
+  var link = window.location.origin + window.location.pathname + '?session=' + currentSessionId;
+  if (navigator.share) {
+    navigator.share({title:'Drive-About Checklist', url:link}).catch(function(){});
+  } else {
+    navigator.clipboard.writeText(link).then(function(){
+      showToast('Link copied — share with your team!', 'success', 4000);
+    }).catch(function(){ prompt('Copy this link:', link); });
+  }
 }
 
 // ── LOCATIONS ──
 function addLocation() {
   var name = document.getElementById('locName').value.trim();
   if (!name) { document.getElementById('locName').focus(); return; }
-  if (!currentSessionId) { showToast('Create a session first by clicking "New week"', 'error'); return; }
+  if (!currentSessionId) { showToast('Create a session first', 'error'); return; }
   var btn = document.getElementById('addLocBtn');
-  btn.disabled = true;
-  btn.innerHTML = '<i class="ti ti-loader-2 spin"></i> Adding…';
-  api('addLocation', {
-    sessionId: currentSessionId,
-    name: name,
+  btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader-2 spin"></i> Adding…';
+  var newId = Date.now().toString();
+  var loc = {
+    id: newId, name: name,
     event: document.getElementById('locEvent').value.trim(),
-    spaces: parseInt(document.getElementById('locSpaces').value) || 0,
+    spaces: parseInt(document.getElementById('locSpaces').value)||0,
     notes: document.getElementById('locNotes').value.trim(),
+    checked: false, status: '', issue: '',
     sortOrder: currentLocations.length + 1
-  }).then(function(res) {
-    currentLocations.push({
-      id: String(res.id), name: name,
-      event: document.getElementById('locEvent').value.trim(),
-      spaces: parseInt(document.getElementById('locSpaces').value)||0,
-      notes: document.getElementById('locNotes').value.trim(),
-      checked: false, status: '', issue: '',
-      sortOrder: currentLocations.length + 1
-    });
-    ['locName','locEvent','locSpaces','locNotes'].forEach(function(id){ document.getElementById(id).value=''; });
-    renderLocList();
-    btn.disabled = false;
-    btn.innerHTML = '<i class="ti ti-plus"></i> Add location';
-    showToast('Location added — visible to all', 'success');
-  }).catch(function(){
-    btn.disabled = false;
-    btn.innerHTML = '<i class="ti ti-plus"></i> Add location';
-    showToast('Failed to add location', 'error');
+  };
+  apiWrite('addLocation', {
+    id: newId, sessionId: currentSessionId, name: loc.name,
+    event: loc.event, spaces: loc.spaces, notes: loc.notes,
+    sortOrder: loc.sortOrder
   });
+  currentLocations.push(loc);
+  ['locName','locEvent','locSpaces','locNotes'].forEach(function(id){ document.getElementById(id).value=''; });
+  renderLocList();
+  btn.disabled = false; btn.innerHTML = '<i class="ti ti-plus"></i> Add location';
+  showToast('Location added', 'success');
 }
 
 function removeLocation(id) {
   if (!confirm('Remove this location?')) return;
-  api('deleteLocation', { id: id }).then(function() {
-    currentLocations = currentLocations.filter(function(l){ return l.id !== id; });
-    renderLocList();
-    showToast('Location removed', 'info');
-  }).catch(function(){ showToast('Failed to remove', 'error'); });
-}
-
-function renderLocList() {
-  var el = document.getElementById('locList');
-  if (!currentLocations.length) {
-    el.innerHTML = '<p class="empty-msg" style="margin-bottom:1rem">No locations yet. Add some above.</p>';
-    return;
-  }
-  var rows = currentLocations.map(function(l, i) {
-    return '<div class="loc-item" draggable="true" data-id="'+l.id+'" data-index="'+i+'">' +
-      '<div class="drag-handle" title="Drag to reorder"><span></span><span></span><span></span></div>' +
-      '<div class="loc-num">'+(i+1)+'</div>' +
-      '<div class="loc-info">' +
-        '<div class="loc-name">'+l.name+'</div>' +
-        '<div class="loc-meta">'+(l.event||'No event')+' &nbsp;&middot;&nbsp; '+(l.spaces||'—')+' spaces'+(l.notes?' &nbsp;&middot;&nbsp; '+l.notes:'')+'</div>' +
-      '</div>' +
-      '<div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0">' +
-        '<button class="icon-btn" style="width:26px;height:26px;font-size:13px" onclick="moveLocation('+i+',-1)" '+(i===0?'disabled style="opacity:0.3"':'')+' title="Move up"><i class="ti ti-chevron-up"></i></button>' +
-        '<button class="icon-btn" style="width:26px;height:26px;font-size:13px" onclick="moveLocation('+i+',1)" '+(i===currentLocations.length-1?'disabled style="opacity:0.3"':'')+' title="Move down"><i class="ti ti-chevron-down"></i></button>' +
-      '</div>' +
-      '<button class="del-btn" onclick="removeLocation(\''+l.id+'\')"><i class="ti ti-trash"></i></button>' +
-    '</div>';
-  }).join('');
-  el.innerHTML = '<div class="card" style="padding:1rem 1.25rem;margin-bottom:1rem">' +
-    '<div class="card-header"><div class="card-icon"><i class="ti ti-map-pins"></i></div>' +
-    '<div class="card-title">Locations ('+currentLocations.length+')</div>' +
-    '<span style="margin-left:auto;font-size:11px;color:var(--hint);font-weight:500">drag or use arrows to reorder</span></div>' +
-    '<div class="loc-list" id="sortableList">'+rows+'</div></div>';
-  initDragDrop();
+  apiWrite('deleteLocation', {id:id});
+  currentLocations = currentLocations.filter(function(l){ return l.id!==id; });
+  renderLocList();
 }
 
 function moveLocation(index, dir) {
@@ -614,169 +473,191 @@ function moveLocation(index, dir) {
   renderLocList();
 }
 
+function saveSortOrder() {
+  var saves = currentLocations.map(function(l,i){
+    l.sortOrder = i+1;
+    return apiWrite('updateLocation', {id:l.id, isChecked:l.checked, signageStatus:statusToSheet(l.status), fieldNotes:l.issue, sortOrder:i+1});
+  });
+  Promise.all(saves).then(function(){
+    sortLockTimer = setTimeout(function(){ isSorting=false; }, 3000);
+  }).catch(function(){ sortLockTimer = setTimeout(function(){ isSorting=false; }, 3000); });
+}
+
+function renderLocList() {
+  var el = document.getElementById('locList');
+  if (!currentLocations.length) {
+    el.innerHTML = '<p class="empty-msg" style="margin-bottom:1rem">No locations yet.</p>';
+    return;
+  }
+  var rows = currentLocations.map(function(l,i){
+    return '<div class="loc-item" draggable="true" data-id="'+l.id+'" data-index="'+i+'">' +
+      '<div class="drag-handle"><span></span><span></span><span></span></div>' +
+      '<div class="loc-num">'+(i+1)+'</div>' +
+      '<div class="loc-info"><div class="loc-name">'+l.name+'</div>' +
+      '<div class="loc-meta">'+(l.event||'No event')+' · '+(l.spaces||'—')+' spaces'+(l.notes?' · '+l.notes:'')+'</div></div>' +
+      '<div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0">' +
+        '<button class="icon-btn" style="width:26px;height:26px;font-size:13px" onclick="moveLocation('+i+',-1)"'+(i===0?' disabled':'')+'><i class="ti ti-chevron-up"></i></button>' +
+        '<button class="icon-btn" style="width:26px;height:26px;font-size:13px" onclick="moveLocation('+i+',1)"'+(i===currentLocations.length-1?' disabled':'')+'><i class="ti ti-chevron-down"></i></button>' +
+      '</div>' +
+      '<button class="del-btn" onclick="removeLocation(\''+l.id+'\')"><i class="ti ti-trash"></i></button>' +
+    '</div>';
+  }).join('');
+  el.innerHTML = '<div class="card" style="padding:1rem 1.25rem;margin-bottom:1rem">' +
+    '<div class="card-header"><div class="card-icon"><i class="ti ti-map-pins"></i></div>' +
+    '<div class="card-title">Locations ('+currentLocations.length+')</div>' +
+    '<span style="margin-left:auto;font-size:11px;color:var(--hint)">drag or arrows to reorder</span></div>' +
+    '<div class="loc-list" id="sortableList">'+rows+'</div></div>';
+  initDragDrop();
+}
+
 function initDragDrop() {
   var list = document.getElementById('sortableList');
   if (!list) return;
   var items = list.querySelectorAll('.loc-item');
   var dragSrc = null;
-
-  items.forEach(function(item) {
-    item.addEventListener('dragstart', function(e) {
-      dragSrc = this;
-      isSorting = true;
+  items.forEach(function(item){
+    item.addEventListener('dragstart', function(e){
+      dragSrc = this; isSorting = true;
       if (sortLockTimer) clearTimeout(sortLockTimer);
       this.classList.add('dragging');
       e.dataTransfer.effectAllowed = 'move';
     });
-    item.addEventListener('dragend', function() {
+    item.addEventListener('dragend', function(){
       this.classList.remove('dragging');
       list.querySelectorAll('.loc-item').forEach(function(i){ i.classList.remove('drag-over'); });
     });
-    item.addEventListener('dragover', function(e) {
+    item.addEventListener('dragover', function(e){
       e.preventDefault();
-      e.dataTransfer.dropEffect = 'move';
       list.querySelectorAll('.loc-item').forEach(function(i){ i.classList.remove('drag-over'); });
       if (this !== dragSrc) this.classList.add('drag-over');
     });
-    item.addEventListener('drop', function(e) {
+    item.addEventListener('drop', function(e){
       e.preventDefault();
       if (this === dragSrc) return;
-      var fromIdx = parseInt(dragSrc.dataset.index);
-      var toIdx = parseInt(this.dataset.index);
-      var moved = currentLocations.splice(fromIdx, 1)[0];
-      currentLocations.splice(toIdx, 0, moved);
+      var from = parseInt(dragSrc.dataset.index);
+      var to = parseInt(this.dataset.index);
+      var moved = currentLocations.splice(from,1)[0];
+      currentLocations.splice(to,0,moved);
       saveSortOrder();
       renderLocList();
     });
   });
 }
 
-function saveSortOrder() {
-  isSorting = true;
-  if (sortLockTimer) clearTimeout(sortLockTimer);
-  var saves = currentLocations.map(function(l, i) {
-    l.sortOrder = i + 1;
-    return api('updateLocation', { id: l.id, isChecked: l.checked, signageStatus: statusToSheet(l.status), fieldNotes: l.issue, sortOrder: i + 1 });
-  });
-  Promise.all(saves).then(function() {
-    sortLockTimer = setTimeout(function() { isSorting = false; }, 3000);
-  }).catch(function() {
-    sortLockTimer = setTimeout(function() { isSorting = false; }, 3000);
-  });
-}
-
 // ── CHECKLIST ──
 function startChecklist() {
-  if (!currentLocations.length) { showToast('Add at least one location first', 'error'); return; }
+  if (!currentLocations.length) { showToast('Add at least one location first','error'); return; }
   switchTab('checklist');
 }
 
 function renderChecklist() {
-  var locs = currentLocations;
-  var done = locs.filter(function(l){ return l.checked; }).length;
-  var issues = locs.filter(function(l){ return l.status==='warn'||l.status==='bad'; }).length;
-  var pct = locs.length ? Math.round(done/locs.length*100) : 0;
+  updateStats();
   var dateVal = document.getElementById('driveDate').value;
   var d = dateVal ? new Date(dateVal+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}) : 'No date set';
   document.getElementById('cl-date').textContent = d;
-  document.getElementById('cl-driver').textContent = document.getElementById('driverName').value || 'Stanford Parking Operations';
-  document.getElementById('cl-count').textContent = done+' / '+locs.length;
-  document.getElementById('st-total').textContent = locs.length;
-  document.getElementById('st-done').textContent = done;
-  document.getElementById('st-issues').textContent = issues;
-  document.getElementById('prog-fill').style.width = pct+'%';
-  document.getElementById('prog-pct').textContent = pct+'%';
+  document.getElementById('cl-driver').textContent = document.getElementById('driverName').value||'Stanford Parking Operations';
   var el = document.getElementById('checkItems');
-  if (!locs.length) { el.innerHTML='<p class="empty-msg">No locations. Add some in Setup first.</p>'; return; }
-  el.innerHTML = locs.map(function(l,i) {
+  if (!currentLocations.length) { el.innerHTML='<p class="empty-msg">No locations added yet.</p>'; return; }
+  el.innerHTML = currentLocations.map(function(l,i){
     var sc = l.status==='ok'?'s-ok':l.status==='warn'?'s-warn':l.status==='bad'?'s-bad':l.checked?'s-done':'';
-    var isExpanded = expandedCards[l.id] ? ' expanded' : '';
-    return '<div class="cl-card '+sc+isExpanded+'" id="lc-'+l.id+'">' +
+    var exp = expandedIds[l.id] ? ' expanded' : '';
+    return '<div class="cl-card '+sc+exp+'" id="lc-'+l.id+'">' +
       '<div class="cl-top">' +
         '<div class="cl-num">'+(i+1)+'</div>' +
-        '<div class="cl-info"><div class="cl-name">'+l.name+'</div><div class="cl-sub">'+(l.event||'No event')+' &nbsp;&middot;&nbsp; '+(l.spaces||'—')+' spaces</div></div>' +
+        '<div class="cl-info"><div class="cl-name">'+l.name+'</div>' +
+        '<div class="cl-sub">'+(l.event||'No event')+' · '+(l.spaces||'—')+' spaces</div></div>' +
         '<div class="cl-actions">' +
           '<button class="icon-btn" onclick="toggleExpand(\''+l.id+'\')"><i class="ti ti-notes"></i></button>' +
-          '<button class="chk-btn '+(l.checked?'done':'')+'" onclick="toggleCheck(\''+l.id+'\')"><i class="ti ti-check"></i></button>' +
+          '<button class="chk-btn '+(l.checked?'done':'')+'" id="chk-'+l.id+'" onclick="toggleCheck(\''+l.id+'\')"><i class="ti ti-check"></i></button>' +
         '</div>' +
       '</div>' +
-      '<div class="cl-expand" id="exp-'+l.id+'">' +
+      '<div class="cl-expand">' +
         '<div class="expand-label">Signage condition</div>' +
         '<div class="chips">' +
-          '<button class="chip ok '+(l.status==='ok'?'on':'')+'" onclick="setStatus(\''+l.id+'\',\'ok\')"><i class="ti ti-circle-check"></i> All good</button>' +
-          '<button class="chip warn '+(l.status==='warn'?'on':'')+'" onclick="setStatus(\''+l.id+'\',\'warn\')"><i class="ti ti-alert-triangle"></i> Needs attention</button>' +
-          '<button class="chip bad '+(l.status==='bad'?'on':'')+'" onclick="setStatus(\''+l.id+'\',\'bad\')"><i class="ti ti-x"></i> Sign missing</button>' +
+          '<button class="chip ok '+(l.status==='ok'?'on':'')+'" id="chip-ok-'+l.id+'" onclick="setStatus(\''+l.id+'\',\'ok\')"><i class="ti ti-circle-check"></i> All good</button>' +
+          '<button class="chip warn '+(l.status==='warn'?'on':'')+'" id="chip-warn-'+l.id+'" onclick="setStatus(\''+l.id+'\',\'warn\')"><i class="ti ti-alert-triangle"></i> Needs attention</button>' +
+          '<button class="chip bad '+(l.status==='bad'?'on':'')+'" id="chip-bad-'+l.id+'" onclick="setStatus(\''+l.id+'\',\'bad\')"><i class="ti ti-x"></i> Sign missing</button>' +
         '</div>' +
         '<div class="fgroup"><label class="flabel">Issue / notes</label>' +
-          '<textarea class="finput" placeholder="Describe any issue…" oninput="setIssue(\''+l.id+'\',this.value)">'+(l.issue||'')+'</textarea>' +
+          '<textarea class="finput" id="issue-'+l.id+'" placeholder="Describe any issue…" oninput="setIssue(\''+l.id+'\',this.value)">'+l.issue+'</textarea>' +
         '</div>' +
       '</div>' +
     '</div>';
   }).join('');
 }
 
-var expandedCards = {};
-
-function toggleExpand(id) {
-  var card = document.getElementById('lc-'+id);
-  if (card) {
-    card.classList.toggle('expanded');
-    expandedCards[id] = card.classList.contains('expanded');
-  }
+function updateStats() {
+  var locs = currentLocations;
+  var done = locs.filter(function(l){ return l.checked; }).length;
+  var issues = locs.filter(function(l){ return l.status==='warn'||l.status==='bad'; }).length;
+  var pct = locs.length ? Math.round(done/locs.length*100) : 0;
+  document.getElementById('cl-count').textContent = done+' / '+locs.length;
+  document.getElementById('st-total').textContent = locs.length;
+  document.getElementById('st-done').textContent = done;
+  document.getElementById('st-issues').textContent = issues;
+  document.getElementById('prog-fill').style.width = pct+'%';
+  document.getElementById('prog-pct').textContent = pct+'%';
 }
 
+function toggleExpand(id) {
+  expandedIds[id] = !expandedIds[id];
+  var card = document.getElementById('lc-'+id);
+  if (card) card.classList.toggle('expanded', expandedIds[id]);
+}
+
+// toggleCheck and setStatus NEVER call renderChecklist — update DOM in place only
 function toggleCheck(id) {
   var l = currentLocations.find(function(x){ return x.id===id; });
+  if (!l) return;
   l.checked = !l.checked;
-  api('updateLocation', { id: id, isChecked: l.checked, signageStatus: statusToSheet(l.status), fieldNotes: l.issue });
-  // Update just the check button and card color in place — no full re-render
-  var card = document.getElementById('lc-'+id);
-  var btn = card ? card.querySelector('.chk-btn') : null;
-  if (btn) btn.className = 'chk-btn' + (l.checked ? ' done' : '');
-  if (card) {
-    var sc = l.status==='ok'?'s-ok':l.status==='warn'?'s-warn':l.status==='bad'?'s-bad':l.checked?'s-done':'';
-    card.className = 'cl-card ' + sc + (expandedCards[id] ? ' expanded' : '');
-  }
-  updateChecklistStats();
+  apiWrite('updateLocation', {id:id, isChecked:l.checked, signageStatus:statusToSheet(l.status), fieldNotes:l.issue});
+  // Update just the button
+  var btn = document.getElementById('chk-'+id);
+  if (btn) btn.className = 'chk-btn'+(l.checked?' done':'');
+  // Update card border color
+  updateCardClass(id, l);
+  updateStats();
 }
 
 function setStatus(id, status) {
   var l = currentLocations.find(function(x){ return x.id===id; });
+  if (!l) return;
   l.status = l.status===status ? '' : status;
   if (l.status) l.checked = true;
-  api('updateLocation', { id: id, isChecked: l.checked, signageStatus: statusToSheet(l.status), fieldNotes: l.issue });
-  expandedCards[id] = true;
-  // Update card color and chips in place — no full re-render
+  apiWrite('updateLocation', {id:id, isChecked:l.checked, signageStatus:statusToSheet(l.status), fieldNotes:l.issue});
+  expandedIds[id] = true;
+  // Update chips in place
+  ['ok','warn','bad'].forEach(function(s){
+    var chip = document.getElementById('chip-'+s+'-'+id);
+    if (chip) chip.className = 'chip '+s+(l.status===s?' on':'');
+  });
+  // Update check button
+  var btn = document.getElementById('chk-'+id);
+  if (btn) btn.className = 'chk-btn'+(l.checked?' done':'');
+  // Update card border
+  updateCardClass(id, l);
+  // Keep card expanded
   var card = document.getElementById('lc-'+id);
-  if (card) {
-    var sc = l.status==='ok'?'s-ok':l.status==='warn'?'s-warn':l.status==='bad'?'s-bad':l.checked?'s-done':'';
-    card.className = 'cl-card ' + sc + ' expanded';
-    // Update chip selected states
-    var chips = card.querySelectorAll('.chip');
-    chips.forEach(function(chip) {
-      chip.classList.remove('on');
-      if ((chip.classList.contains('ok') && l.status==='ok') ||
-          (chip.classList.contains('warn') && l.status==='warn') ||
-          (chip.classList.contains('bad') && l.status==='bad')) {
-        chip.classList.add('on');
-      }
-    });
-    // Update check button
-    var btn = card.querySelector('.chk-btn');
-    if (btn) btn.className = 'chk-btn' + (l.checked ? ' done' : '');
-  }
-  updateChecklistStats();
+  if (card) card.classList.add('expanded');
+  updateStats();
+}
+
+function updateCardClass(id, l) {
+  var card = document.getElementById('lc-'+id);
+  if (!card) return;
+  var sc = l.status==='ok'?'s-ok':l.status==='warn'?'s-warn':l.status==='bad'?'s-bad':l.checked?'s-done':'';
+  card.className = 'cl-card'+( sc?' '+sc:'')+( expandedIds[id]?' expanded':'');
 }
 
 function setIssue(id, val) {
   var l = currentLocations.find(function(x){ return x.id===id; });
-  l.issue = val;
-  api('updateLocation', { id: id, isChecked: l.checked, signageStatus: statusToSheet(l.status), fieldNotes: val });
+  if (l) l.issue = val;
+  apiWrite('updateLocation', {id:id, isChecked:l.checked, signageStatus:statusToSheet(l.status), fieldNotes:val});
 }
 
 // ── REPORT ──
-function renderReport(locs) {
-  locs = locs || currentLocations;
+function renderReport() {
+  var locs = currentLocations;
   var ok = locs.filter(function(l){ return l.status==='ok'; }).length;
   var issues = locs.filter(function(l){ return l.status==='warn'||l.status==='bad'; }).length;
   document.getElementById('r-total').textContent = locs.length;
@@ -787,45 +668,46 @@ function renderReport(locs) {
   var driver = document.getElementById('driverName').value;
   var el = document.getElementById('reportBody');
   if (!locs.length) { el.innerHTML='<p class="empty-msg">Complete the checklist to see your report.</p>'; return; }
-  el.innerHTML = '<div style="font-size:12px;color:var(--muted);margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid #f3f4f6">'+d+(driver?' &nbsp;&middot;&nbsp; '+driver:'')+' &nbsp;&middot;&nbsp; '+locs.length+' locations</div>' +
-    locs.map(function(l,i) {
+  el.innerHTML = '<div style="font-size:12px;color:var(--muted);margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid #f3f4f6">'+d+(driver?' · '+driver:'')+' · '+locs.length+' locations</div>' +
+    locs.map(function(l,i){
       var badge = l.status==='ok'?'<span class="badge badge-ok">All clear</span>':
                   l.status==='warn'?'<span class="badge badge-warn">Needs attention</span>':
                   l.status==='bad'?'<span class="badge badge-bad">Sign missing</span>':
                   '<span class="badge badge-skip">Not checked</span>';
-      return '<div class="report-item"><div style="flex:1;min-width:0"><div class="ri-name">'+(i+1)+'. '+l.name+'</div><div class="ri-sub">'+(l.event||'—')+' &nbsp;&middot;&nbsp; '+(l.spaces||'—')+' spaces</div>'+(l.issue?'<div class="ri-note"><i class="ti ti-message-circle" style="font-size:12px"></i> '+l.issue+'</div>':'')+'</div><div>'+badge+'</div></div>';
+      return '<div class="report-item"><div style="flex:1;min-width:0"><div class="ri-name">'+(i+1)+'. '+l.name+'</div><div class="ri-sub">'+(l.event||'—')+' · '+(l.spaces||'—')+' spaces</div>'+(l.issue?'<div class="ri-note"><i class="ti ti-message-circle" style="font-size:12px"></i> '+l.issue+'</div>':'')+'</div><div>'+badge+'</div></div>';
     }).join('');
 }
 
 function completeAndNew() {
-  if (!currentLocations.length) { showToast('No locations to complete.', 'error'); return; }
-  if (!confirm('Mark this session complete and start a new week?')) return;
-  // Mark old session complete (fire and forget)
-  api('updateSession', { id: currentSessionId, status: 'Completed' });
-  // Generate new session ID locally (avoids no-cors response blocking on mobile)
+  if (!currentLocations.length) { showToast('No locations to complete','error'); return; }
+  if (!confirm('Mark complete and start a new week?')) return;
+  apiWrite('updateSession', {id:currentSessionId, status:'Completed'});
   var newId = Date.now().toString();
-  var newDate = new Date().toISOString().split('T')[0];
+  var date = new Date().toISOString().split('T')[0];
   var driver = document.getElementById('driverName').value.trim();
-  // Write new session to sheet
-  api('createSession', { date: newDate, driver: driver, id: newId });
-  // Immediately switch to new session locally
+  apiWrite('createSession', {id:newId, date:date, driver:driver});
   currentSessionId = newId;
-  localStorage.setItem(SESSION_KEY, currentSessionId);
+  localStorage.setItem(SESSION_KEY, newId);
   currentLocations = [];
-  document.getElementById('driveDate').value = newDate;
+  expandedIds = {};
+  document.getElementById('driveDate').value = date;
   document.getElementById('driverName').value = driver;
   document.getElementById('shareBtn').style.display = '';
+  document.getElementById('liveIndicator').innerHTML = '<span class="live-pill"><span class="live-dot"></span> Live</span>';
   renderLocList();
   switchTab('setup');
-  showToast('✓ Complete! New week started — share the new link!', 'success', 4000);
+  showToast('Done! New week started. Share the new link.', 'success', 5000);
+  startPolling();
 }
 
-function buildReportText(locs, date, driver) {
-  var d = date ? new Date(date+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}) : '';
+function buildReportText() {
+  var dateVal = document.getElementById('driveDate').value;
+  var d = dateVal ? new Date(dateVal+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}) : '';
+  var driver = document.getElementById('driverName').value;
   var txt = 'STANFORD PARKING — DRIVE-ABOUT SIGNAGE CHECKLIST\nDate: '+d+'\n';
   if (driver) txt += 'Team: '+driver+'\n'; txt += '\n';
-  locs.forEach(function(l,i) {
-    var st = l.status==='ok'?'✅ All clear':l.status==='warn'?'⚠️ Needs attention':l.status==='bad'?'❌ Sign missing':'– Not checked';
+  currentLocations.forEach(function(l,i){
+    var st = l.status==='ok'?'All clear':l.status==='warn'?'Needs attention':l.status==='bad'?'Sign missing':'Not checked';
     txt += (i+1)+'. '+l.name+'\n   Event: '+(l.event||'—')+' | Spaces: '+(l.spaces||'—')+'\n   Status: '+st+'\n';
     if (l.issue) txt += '   Notes: '+l.issue+'\n'; txt += '\n';
   });
@@ -833,14 +715,98 @@ function buildReportText(locs, date, driver) {
 }
 
 function copyReport() {
-  var date = document.getElementById('driveDate').value;
-  var driver = document.getElementById('driverName').value;
-  navigator.clipboard.writeText(buildReportText(currentLocations, date, driver)).then(function(){ showToast('Report copied!', 'success'); });
+  navigator.clipboard.writeText(buildReportText()).then(function(){ showToast('Report copied!','success'); });
 }
 
 // ── HISTORY ──
+function loadHistory() {
+  document.getElementById('historyList').innerHTML = '<p class="empty-msg"><i class="ti ti-loader-2 spin"></i> Loading…</p>';
+  apiRead('action=getSessions')
+    .then(function(rows) {
+      if (!Array.isArray(rows) || rows.length < 2) {
+        document.getElementById('historyList').innerHTML = '<p class="empty-msg">No sessions found.</p>';
+        return;
+      }
+      var headers = rows[0];
+      var sessions = rows.slice(1).map(function(r){
+        var o={}; headers.forEach(function(h,i){o[h]=r[i];}); return o;
+      }).sort(function(a,b){ return new Date(b['CreatedAt'])-new Date(a['CreatedAt']); });
+      if (!sessions.length) {
+        document.getElementById('historyList').innerHTML = '<p class="empty-msg">No sessions yet.</p>';
+        return;
+      }
+      document.getElementById('historyList').innerHTML = sessions.map(function(s){
+        var sid = String(s['ID']);
+        var sdate = s['Date'] ? String(s['Date']).substring(0,10) : '';
+        var sdriver = s['Driver'] || '';
+        var d = sdate ? new Date(sdate+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'}) : 'No date';
+        var isActive = sid === String(currentSessionId);
+        var badge = isActive
+          ? '<span style="background:#d1fae5;color:#065f46;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;white-space:nowrap">Active</span>'
+          : '<span style="background:#f4f4f5;color:#6b7280;border-radius:20px;padding:3px 10px;font-size:11px;white-space:nowrap">'+(s['Status']||'Done')+'</span>';
+        return '<div class="history-item" onclick="openHistoryDetail(\''+sid+'\',\''+sdate+'\',\''+sdriver+'\')">'+
+          '<div style="flex:1"><div style="font-size:14px;font-weight:600;color:var(--text)">'+d+'</div>'+
+          '<div style="font-size:12px;color:var(--muted);margin-top:2px">'+(sdriver||'No driver')+'</div></div>'+
+          badge+'<i class="ti ti-chevron-right" style="font-size:16px;color:var(--hint);margin-left:8px"></i></div>';
+      }).join('');
+    })
+    .catch(function(){
+      document.getElementById('historyList').innerHTML = '<p class="empty-msg">Could not load — check connection.</p>';
+    });
+}
+
+function openHistoryDetail(sid, sdate, sdriver) {
+  document.getElementById('historyCard').style.display = 'none';
+  document.getElementById('historyDetail').style.display = 'block';
+  var d = sdate ? new Date(sdate+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}) : 'No date';
+  document.getElementById('hd-title').textContent = d+(sdriver?' · '+sdriver:'');
+  document.getElementById('hd-body').innerHTML = '<p class="empty-msg"><i class="ti ti-loader-2 spin"></i> Loading…</p>';
+  apiRead('action=getLocations&sessionId='+sid)
+    .then(function(rows){
+      if (!Array.isArray(rows)||rows.length<2){document.getElementById('hd-body').innerHTML='<p class="empty-msg">No locations found.</p>';return;}
+      var headers=rows[0];
+      var locs=rows.slice(1).map(function(r){return rowToLoc(headers,r);});
+      locs.sort(function(a,b){return a.sortOrder-b.sortOrder;});
+      var ok=locs.filter(function(l){return l.status==='ok';}).length;
+      var issues=locs.filter(function(l){return l.status==='warn'||l.status==='bad';}).length;
+      document.getElementById('hd-total').textContent=locs.length;
+      document.getElementById('hd-ok').textContent=ok;
+      document.getElementById('hd-issues').textContent=issues;
+      viewingSession={locs:locs,date:sdate,driver:sdriver};
+      document.getElementById('hd-body').innerHTML=locs.map(function(l,i){
+        var badge=l.status==='ok'?'<span class="badge badge-ok">All clear</span>':
+                  l.status==='warn'?'<span class="badge badge-warn">Needs attention</span>':
+                  l.status==='bad'?'<span class="badge badge-bad">Sign missing</span>':
+                  '<span class="badge badge-skip">Not checked</span>';
+        return '<div class="report-item"><div style="flex:1;min-width:0"><div class="ri-name">'+(i+1)+'. '+l.name+'</div><div class="ri-sub">'+(l.event||'—')+' · '+(l.spaces||'—')+' spaces</div>'+(l.issue?'<div class="ri-note"><i class="ti ti-message-circle" style="font-size:12px"></i> '+l.issue+'</div>':'')+'</div><div>'+badge+'</div></div>';
+      }).join('');
+    }).catch(function(){document.getElementById('hd-body').innerHTML='<p class="empty-msg">Error loading.</p>';});
+}
+
+function closeHistoryDetail() {
+  viewingSession=null;
+  document.getElementById('historyCard').style.display='';
+  document.getElementById('historyDetail').style.display='none';
+}
+
+function copyHistoryReport() {
+  if (!viewingSession) return;
+  var d = viewingSession.date ? new Date(viewingSession.date+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}) : '';
+  var txt = 'STANFORD PARKING — DRIVE-ABOUT SIGNAGE CHECKLIST\nDate: '+d+'\n';
+  if (viewingSession.driver) txt += 'Team: '+viewingSession.driver+'\n'; txt += '\n';
+  viewingSession.locs.forEach(function(l,i){
+    var st=l.status==='ok'?'All clear':l.status==='warn'?'Needs attention':l.status==='bad'?'Sign missing':'Not checked';
+    txt+=(i+1)+'. '+l.name+'\n   Event: '+(l.event||'—')+' | Spaces: '+(l.spaces||'—')+'\n   Status: '+st+'\n';
+    if(l.issue)txt+='   Notes: '+l.issue+'\n'; txt+='\n';
+  });
+  navigator.clipboard.writeText(txt).then(function(){showToast('Report copied!','success');});
+}
+
+// ── TABS ──
 function switchTab(t) {
-  document.querySelectorAll('.tab').forEach(function(el,i){ el.classList.toggle('active',['setup','checklist','report','history'][i]===t); });
+  document.querySelectorAll('.tab').forEach(function(el,i){
+    el.classList.toggle('active',['setup','checklist','report','history'][i]===t);
+  });
   document.querySelectorAll('.section').forEach(function(el){ el.classList.remove('active'); });
   document.getElementById('tab-'+t).classList.add('active');
   if (t==='checklist') renderChecklist();
@@ -848,73 +814,6 @@ function switchTab(t) {
   if (t==='history') { closeHistoryDetail(); loadHistory(); }
 }
 
-function loadHistory() {
-  document.getElementById('historyList').innerHTML = '<p class="empty-msg"><i class="ti ti-loader-2 spin"></i> Loading…</p>';
-  fetch(API + '?action=getSessions', { mode: 'cors' }).then(function(r){ return r.json(); }).then(function(rows) {
-    if (!Array.isArray(rows) || rows.length < 2) {
-      document.getElementById('historyList').innerHTML = '<p class="empty-msg">No past sessions found.</p>';
-      return;
-    }
-    var headers = rows[0];
-    var sessions = rows.slice(1).map(function(r) {
-      var o = {}; headers.forEach(function(h,i){ o[h]=r[i]; }); return o;
-    }).sort(function(a,b){ return new Date(b['CreatedAt'])-new Date(a['CreatedAt']); });
-    if (!sessions.length) {
-      document.getElementById('historyList').innerHTML = '<p class="empty-msg">No sessions found yet.</p>';
-      return;
-    }
-    document.getElementById('historyList').innerHTML = sessions.map(function(s) {
-      var d = s['Date'] ? new Date(String(s['Date']).substring(0,10)+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'}) : 'No date';
-      var isActive = String(s['ID']) === String(currentSessionId);
-      var badge = isActive ? '<span style="background:#d1fae5;color:#065f46;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700">Active</span>' : '<span style="background:#f4f4f5;color:#6b7280;border-radius:20px;padding:3px 10px;font-size:11px">'+(s['Status']||'Done')+'</span>';
-      var sid = String(s['ID']); var sdate = String(s['Date']).substring(0,10); var sdrv = s['Driver']||'';
-      return '<div class="history-item" onclick="openHistoryDetail(\''+sid+'\',\''+sdate+'\',\''+sdrv+'\')">'+'<div class="history-info" style="flex:1"><div class="history-date">'+d+'</div><div class="history-meta">'+(s['Driver']||'No driver')+'</div></div>'+badge+'<i class="ti ti-chevron-right" style="font-size:16px;color:#9ca3af;margin-left:8px"></i></div>';
-    }).join('');
-  }).catch(function(){
-    document.getElementById('historyList').innerHTML = '<p class="empty-msg">Could not load history.</p>';
-  });
-}
-
-function openHistoryDetail(sessionId, date, driver) {
-  document.getElementById('historyCard').style.display = 'none';
-  document.getElementById('historyDetail').style.display = 'block';
-  var d = date ? new Date(date+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}) : 'No date';
-  document.getElementById('hd-title').textContent = d + (driver ? ' · '+driver : '');
-  document.getElementById('hd-body').innerHTML = '<p class="empty-msg"><i class="ti ti-loader-2 spin"></i> Loading locations…</p>';
-  fetch(API + '?action=getLocations&sessionId='+sessionId, { mode: 'cors' }).then(function(r){ return r.json(); }).then(function(rows) {
-    if (!Array.isArray(rows)||rows.length<2) { document.getElementById('hd-body').innerHTML='<p class="empty-msg">No locations found.</p>'; return; }
-    var headers = rows[0];
-    var locs = rows.slice(1).map(function(r){ return rowToLocation(headers,r); });
-    locs.sort(function(a,b){ return a.sortOrder-b.sortOrder; });
-    var ok = locs.filter(function(l){ return l.status==='ok'; }).length;
-    var issues = locs.filter(function(l){ return l.status==='warn'||l.status==='bad'; }).length;
-    document.getElementById('hd-total').textContent = locs.length;
-    document.getElementById('hd-ok').textContent = ok;
-    document.getElementById('hd-issues').textContent = issues;
-    viewingSession = { locs: locs, date: date, driver: driver };
-    document.getElementById('hd-body').innerHTML = locs.map(function(l,i) {
-      var badge = l.status==='ok'?'<span class="badge badge-ok">All clear</span>':
-                  l.status==='warn'?'<span class="badge badge-warn">Needs attention</span>':
-                  l.status==='bad'?'<span class="badge badge-bad">Sign missing</span>':
-                  '<span class="badge badge-skip">Not checked</span>';
-      return '<div class="report-item"><div style="flex:1;min-width:0"><div class="ri-name">'+(i+1)+'. '+l.name+'</div><div class="ri-sub">'+(l.event||'—')+' &nbsp;&middot;&nbsp; '+(l.spaces||'—')+' spaces</div>'+(l.issue?'<div class="ri-note"><i class="ti ti-message-circle" style="font-size:12px"></i> '+l.issue+'</div>':'')+'</div><div>'+badge+'</div></div>';
-    }).join('');
-  }).catch(function(){ document.getElementById('hd-body').innerHTML='<p class="empty-msg">Error loading locations.</p>'; });
-}
-
-function closeHistoryDetail() {
-  viewingSession = null;
-  document.getElementById('historyCard').style.display = '';
-  document.getElementById('historyDetail').style.display = 'none';
-}
-
-function copyHistoryReport() {
-  if (!viewingSession) return;
-  navigator.clipboard.writeText(buildReportText(viewingSession.locs, viewingSession.date, viewingSession.driver))
-    .then(function(){ showToast('Report copied!', 'success'); });
-}
-
-// Start
 init();
 </script>
 </body>
