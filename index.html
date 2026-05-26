@@ -394,21 +394,30 @@ function newSession() {
   }
   var newId = Date.now().toString();
   var date = new Date().toISOString().split('T')[0];
-  // Use GET so we can confirm session was created before proceeding
   currentSessionId = newId;
   localStorage.setItem(SESSION_KEY, newId);
-  apiRead('action=createSession&id='+newId+'&date='+date+'&driver=').catch(function(){
-    showToast('Warning: session may not have saved to Sheets', 'error', 5000);
-  });
   currentLocations = [];
   expandedIds = {};
   document.getElementById('driveDate').value = date;
   document.getElementById('driverName').value = '';
   document.getElementById('shareBtn').style.display = '';
   document.getElementById('liveIndicator').innerHTML = '<span class="live-pill"><span class="live-dot"></span> Live</span>';
+  document.getElementById('addLocBtn').disabled = true;
+  document.getElementById('addLocBtn').innerHTML = '<i class="ti ti-loader-2 spin"></i> Setting up session…';
   renderLocList();
-  showToast('New session created!', 'success');
-  startPolling();
+  // Create session via GET and wait for confirmation before enabling add button
+  apiRead('action=createSession&id='+newId+'&date='+date+'&driver=')
+    .then(function() {
+      document.getElementById('addLocBtn').disabled = false;
+      document.getElementById('addLocBtn').innerHTML = '<i class="ti ti-plus"></i> Add location';
+      showToast('New session created!', 'success');
+      startPolling();
+    })
+    .catch(function(){
+      document.getElementById('addLocBtn').disabled = false;
+      document.getElementById('addLocBtn').innerHTML = '<i class="ti ti-plus"></i> Add location';
+      showToast('Warning: session may not have saved to Sheets', 'error', 5000);
+    });
 }
 
 function saveSessionMeta() {
@@ -448,7 +457,13 @@ function addLocation() {
     checked: false, status: '', issue: '',
     sortOrder: currentLocations.length + 1
   };
-  // Use GET so we confirm it actually saved to Sheets
+  // Add to local array immediately so UI updates
+  currentLocations.push(loc);
+  ['locName','locEvent','locSpaces','locNotes'].forEach(function(id){ document.getElementById(id).value=''; });
+  renderLocList();
+  btn.disabled = false; btn.innerHTML = '<i class="ti ti-plus"></i> Add location';
+  showToast('Location added', 'success');
+  // Save to Sheets via GET in background
   apiRead('action=addLocation&id='+newId+
     '&sessionId='+currentSessionId+
     '&name='+encodeURIComponent(loc.name)+
@@ -456,12 +471,7 @@ function addLocation() {
     '&spaces='+loc.spaces+
     '&notes='+encodeURIComponent(loc.notes)+
     '&sortOrder='+loc.sortOrder
-  ).catch(function(){ showToast('Warning: location may not have saved', 'error', 4000); });
-  currentLocations.push(loc);
-  ['locName','locEvent','locSpaces','locNotes'].forEach(function(id){ document.getElementById(id).value=''; });
-  renderLocList();
-  btn.disabled = false; btn.innerHTML = '<i class="ti ti-plus"></i> Add location';
-  showToast('Location added', 'success');
+  ).catch(function(){ showToast('Warning: location may not have saved to Sheets', 'error', 4000); });
 }
 
 function removeLocation(id) {
@@ -695,23 +705,33 @@ function completeAndNew() {
   var newId = Date.now().toString();
   var date = new Date().toISOString().split('T')[0];
   var driver = document.getElementById('driverName').value.trim();
-  // Mark old session complete first, then create new one
+  // Mark old session complete
   apiWrite('updateSession', {id:oldSessionId, status:'Completed'});
   currentSessionId = newId;
   localStorage.setItem(SESSION_KEY, newId);
-  apiRead('action=createSession&id='+newId+'&date='+date+'&driver='+encodeURIComponent(driver)).catch(function(){
-    showToast('Warning: new session may not have saved to Sheets', 'error', 5000);
-  });
   currentLocations = [];
   expandedIds = {};
   document.getElementById('driveDate').value = date;
   document.getElementById('driverName').value = driver;
   document.getElementById('shareBtn').style.display = '';
   document.getElementById('liveIndicator').innerHTML = '<span class="live-pill"><span class="live-dot"></span> Live</span>';
+  document.getElementById('addLocBtn').disabled = true;
+  document.getElementById('addLocBtn').innerHTML = '<i class="ti ti-loader-2 spin"></i> Setting up session…';
   renderLocList();
   switchTab('setup');
-  showToast('Done! New week started. Share the new link.', 'success', 5000);
-  startPolling();
+  // Create new session via GET and wait for confirmation
+  apiRead('action=createSession&id='+newId+'&date='+date+'&driver='+encodeURIComponent(driver))
+    .then(function() {
+      document.getElementById('addLocBtn').disabled = false;
+      document.getElementById('addLocBtn').innerHTML = '<i class="ti ti-plus"></i> Add location';
+      showToast('Done! New week started. Share the new link.', 'success', 5000);
+      startPolling();
+    })
+    .catch(function(){
+      document.getElementById('addLocBtn').disabled = false;
+      document.getElementById('addLocBtn').innerHTML = '<i class="ti ti-plus"></i> Add location';
+      showToast('Warning: session may not have saved', 'error', 5000);
+    });
 }
 
 function buildReportText() {
