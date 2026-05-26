@@ -755,7 +755,9 @@ function loadHistory() {
     });
 }
 
+var currentDetailSessionId = null;
 function openHistoryDetail(sid, sdate, sdriver) {
+  currentDetailSessionId = sid;
   document.getElementById('historyCard').style.display = 'none';
   document.getElementById('historyDetail').style.display = 'block';
   var d = sdate ? new Date(sdate+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}) : 'No date';
@@ -787,6 +789,15 @@ function closeHistoryDetail() {
   viewingSession=null;
   document.getElementById('historyCard').style.display='';
   document.getElementById('historyDetail').style.display='none';
+}
+
+function deleteSession(sid) {
+  if (!confirm('Delete this session and all its locations? This cannot be undone.')) return;
+  apiWrite('deleteSession', {id: sid}).then(function() {
+    showToast('Session deleted', 'success');
+    closeHistoryDetail();
+    loadHistory();
+  });
 }
 
 function copyHistoryReport() {
