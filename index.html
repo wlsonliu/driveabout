@@ -379,7 +379,7 @@ function startPolling() {
   if (pollTimer) clearInterval(pollTimer);
   pollTimer = setInterval(function() {
     if (currentSessionId && !isSorting) refreshLocations();
-  }, 8000);
+  }, 30000);
 }
 
 function refreshLocations() {
@@ -394,12 +394,47 @@ function refreshLocations() {
         return rowToLocation(headers, r);
       });
       newLocs.sort(function(a,b){ return a.sortOrder - b.sortOrder; });
-      currentLocations = newLocs;
-      renderLocList();
+
       var activeTab = document.querySelector('.tab.active');
-      if (activeTab && activeTab.textContent.trim().indexOf('Checklist') > -1) renderChecklist();
-      if (activeTab && activeTab.textContent.trim().indexOf('Report') > -1) renderReport();
+      var onChecklist = activeTab && activeTab.textContent.trim().indexOf('Checklist') > -1;
+      var onSetup = activeTab && activeTab.textContent.trim().indexOf('Setup') > -1;
+      var onReport = activeTab && activeTab.textContent.trim().indexOf('Report') > -1;
+
+      if (onChecklist) {
+        // Merge data only — don't re-render cards (preserves open/typing state)
+        newLocs.forEach(function(newL) {
+          var existing = currentLocations.find(function(l){ return l.id === newL.id; });
+          if (existing) {
+            existing.checked = newL.checked;
+            existing.status = newL.status;
+            // Only update issue if user is not currently focused on that textarea
+            var focused = document.activeElement;
+            if (!focused || focused.id !== 'issue-'+newL.id) {
+              existing.issue = newL.issue;
+            }
+          }
+        });
+        // Just update stats, don't blow away the DOM
+        updateChecklistStats();
+      } else {
+        currentLocations = newLocs;
+        if (onSetup) renderLocList();
+        if (onReport) renderReport();
+      }
     }).catch(function(){});
+}
+
+function updateChecklistStats() {
+  var locs = currentLocations;
+  var done = locs.filter(function(l){ return l.checked; }).length;
+  var issues = locs.filter(function(l){ return l.status==='warn'||l.status==='bad'; }).length;
+  var pct = locs.length ? Math.round(done/locs.length*100) : 0;
+  document.getElementById('cl-count').textContent = done+' / '+locs.length;
+  document.getElementById('st-total').textContent = locs.length;
+  document.getElementById('st-done').textContent = done;
+  document.getElementById('st-issues').textContent = issues;
+  document.getElementById('prog-fill').style.width = pct+'%';
+  document.getElementById('prog-pct').textContent = pct+'%';
 }
 
 function rowToLocation(headers, row) {
@@ -655,7 +690,8 @@ function renderChecklist() {
   if (!locs.length) { el.innerHTML='<p class="empty-msg">No locations. Add some in Setup first.</p>'; return; }
   el.innerHTML = locs.map(function(l,i) {
     var sc = l.status==='ok'?'s-ok':l.status==='warn'?'s-warn':l.status==='bad'?'s-bad':l.checked?'s-done':'';
-    return '<div class="cl-card '+sc+'" id="lc-'+l.id+'">' +
+    var isExpanded = expandedCards[l.id] ? ' expanded' : '';
+    return '<div class="cl-card '+sc+isExpanded+'" id="lc-'+l.id+'">' +
       '<div class="cl-top">' +
         '<div class="cl-num">'+(i+1)+'</div>' +
         '<div class="cl-info"><div class="cl-name">'+l.name+'</div><div class="cl-sub">'+(l.event||'No event')+' &nbsp;&middot;&nbsp; '+(l.spaces||'—')+' spaces</div></div>' +
@@ -672,20 +708,36 @@ function renderChecklist() {
           '<button class="chip bad '+(l.status==='bad'?'on':'')+'" onclick="setStatus(\''+l.id+'\',\'bad\')"><i class="ti ti-x"></i> Sign missing</button>' +
         '</div>' +
         '<div class="fgroup"><label class="flabel">Issue / notes</label>' +
-          '<textarea class="finput" placeholder="Describe any issue…" onchange="setIssue(\''+l.id+'\',this.value)">'+(l.issue||'')+'</textarea>' +
+          '<textarea class="finput" placeholder="Describe any issue…" oninput="setIssue(\''+l.id+'\',this.value)">'+(l.issue||'')+'</textarea>' +
         '</div>' +
       '</div>' +
     '</div>';
   }).join('');
 }
 
-function toggleExpand(id) { document.getElementById('lc-'+id).classList.toggle('expanded'); }
+var expandedCards = {};
+
+function toggleExpand(id) {
+  var card = document.getElementById('lc-'+id);
+  if (card) {
+    card.classList.toggle('expanded');
+    expandedCards[id] = card.classList.contains('expanded');
+  }
+}
 
 function toggleCheck(id) {
   var l = currentLocations.find(function(x){ return x.id===id; });
   l.checked = !l.checked;
   api('updateLocation', { id: id, isChecked: l.checked, signageStatus: statusToSheet(l.status), fieldNotes: l.issue });
-  renderChecklist();
+  // Update just the check button and card color in place — no full re-render
+  var card = document.getElementById('lc-'+id);
+  var btn = card ? card.querySelector('.chk-btn') : null;
+  if (btn) btn.className = 'chk-btn' + (l.checked ? ' done' : '');
+  if (card) {
+    var sc = l.status==='ok'?'s-ok':l.status==='warn'?'s-warn':l.status==='bad'?'s-bad':l.checked?'s-done':'';
+    card.className = 'cl-card ' + sc + (expandedCards[id] ? ' expanded' : '');
+  }
+  updateChecklistStats();
 }
 
 function setStatus(id, status) {
@@ -693,9 +745,27 @@ function setStatus(id, status) {
   l.status = l.status===status ? '' : status;
   if (l.status) l.checked = true;
   api('updateLocation', { id: id, isChecked: l.checked, signageStatus: statusToSheet(l.status), fieldNotes: l.issue });
-  renderChecklist();
+  expandedCards[id] = true;
+  // Update card color and chips in place — no full re-render
   var card = document.getElementById('lc-'+id);
-  if (card) card.classList.add('expanded');
+  if (card) {
+    var sc = l.status==='ok'?'s-ok':l.status==='warn'?'s-warn':l.status==='bad'?'s-bad':l.checked?'s-done':'';
+    card.className = 'cl-card ' + sc + ' expanded';
+    // Update chip selected states
+    var chips = card.querySelectorAll('.chip');
+    chips.forEach(function(chip) {
+      chip.classList.remove('on');
+      if ((chip.classList.contains('ok') && l.status==='ok') ||
+          (chip.classList.contains('warn') && l.status==='warn') ||
+          (chip.classList.contains('bad') && l.status==='bad')) {
+        chip.classList.add('on');
+      }
+    });
+    // Update check button
+    var btn = card.querySelector('.chk-btn');
+    if (btn) btn.className = 'chk-btn' + (l.checked ? ' done' : '');
+  }
+  updateChecklistStats();
 }
 
 function setIssue(id, val) {
@@ -788,17 +858,17 @@ function loadHistory() {
     var headers = rows[0];
     var sessions = rows.slice(1).map(function(r) {
       var o = {}; headers.forEach(function(h,i){ o[h]=r[i]; }); return o;
-    }).filter(function(s){ return s['Status']==='Completed'; })
-      .sort(function(a,b){ return new Date(b['CreatedAt'])-new Date(a['CreatedAt']); });
+    }).sort(function(a,b){ return new Date(b['CreatedAt'])-new Date(a['CreatedAt']); });
     if (!sessions.length) {
-      document.getElementById('historyList').innerHTML = '<p class="empty-msg">No completed sessions yet.</p>';
+      document.getElementById('historyList').innerHTML = '<p class="empty-msg">No sessions found yet.</p>';
       return;
     }
     document.getElementById('historyList').innerHTML = sessions.map(function(s) {
       var d = s['Date'] ? new Date(String(s['Date']).substring(0,10)+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'}) : 'No date';
-      return '<div class="history-item" onclick="openHistoryDetail(\''+s['ID']+'\',\''+String(s['Date']).substring(0,10)+'\',\''+s['Driver']+'\')">'+
-        '<div class="history-info"><div class="history-date">'+d+'</div><div class="history-meta">'+(s['Driver']||'No driver')+'</div></div>'+
-        '<i class="ti ti-chevron-right" style="font-size:16px;color:var(--hint)"></i></div>';
+      var isActive = String(s['ID']) === String(currentSessionId);
+      var badge = isActive ? '<span style="background:#d1fae5;color:#065f46;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700">Active</span>' : '<span style="background:#f4f4f5;color:#6b7280;border-radius:20px;padding:3px 10px;font-size:11px">'+(s['Status']||'Done')+'</span>';
+      var sid = String(s['ID']); var sdate = String(s['Date']).substring(0,10); var sdrv = s['Driver']||'';
+      return '<div class="history-item" onclick="openHistoryDetail(\''+sid+'\',\''+sdate+'\',\''+sdrv+'\')">'+'<div class="history-info" style="flex:1"><div class="history-date">'+d+'</div><div class="history-meta">'+(s['Driver']||'No driver')+'</div></div>'+badge+'<i class="ti ti-chevron-right" style="font-size:16px;color:#9ca3af;margin-left:8px"></i></div>';
     }).join('');
   }).catch(function(){
     document.getElementById('historyList').innerHTML = '<p class="empty-msg">Could not load history.</p>';
