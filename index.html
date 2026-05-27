@@ -702,6 +702,7 @@ function completeAndNew() {
   if (!currentLocations.length) { showToast('No locations to complete','error'); return; }
   if (!confirm('Mark complete and start a new week?')) return;
   var oldSessionId = currentSessionId;
+  var oldLocs = currentLocations.slice(); // save before clearing
   var newId = Date.now().toString();
   var date = new Date().toISOString().split('T')[0];
   var driver = document.getElementById('driverName').value.trim();
@@ -719,12 +720,48 @@ function completeAndNew() {
   document.getElementById('addLocBtn').innerHTML = '<i class="ti ti-loader-2 spin"></i> Setting up session…';
   renderLocList();
   switchTab('setup');
+  // Find locations that need attention or are missing — carry them over
+  var carryOver = oldLocs.filter(function(l){
+    return l.status === 'warn' || l.status === 'bad';
+  });
+
   // Create new session via GET and wait for confirmation
   apiRead('action=createSession&id='+newId+'&date='+date+'&driver='+encodeURIComponent(driver))
     .then(function() {
       document.getElementById('addLocBtn').disabled = false;
       document.getElementById('addLocBtn').innerHTML = '<i class="ti ti-plus"></i> Add location';
-      showToast('Done! New week started. Share the new link.', 'success', 5000);
+      // Add carried-over locations to new session
+      if (carryOver.length > 0) {
+        var carried = [];
+        var promises = carryOver.map(function(l, i) {
+          var carryId = Date.now().toString() + i;
+          var carryLoc = {
+            id: carryId, name: l.name, event: l.event,
+            spaces: l.spaces, notes: l.notes,
+            checked: false, status: '', issue: '',
+            sortOrder: i + 1,
+            carriedOver: true
+          };
+          carried.push(carryLoc);
+          return apiRead('action=addLocation&id='+carryId+
+            '&sessionId='+newId+
+            '&name='+encodeURIComponent(l.name)+
+            '&event='+encodeURIComponent(l.event)+
+            '&spaces='+l.spaces+
+            '&notes='+encodeURIComponent('⚠️ Carried from last week: '+l.issue)+
+            '&sortOrder='+(i+1)
+          );
+        });
+        Promise.all(promises).then(function() {
+          currentLocations = carried;
+          renderLocList();
+          showToast('Done! '+carryOver.length+' unresolved location'+(carryOver.length>1?'s':'')+' carried over.', 'success', 6000);
+        }).catch(function(){
+          showToast('Done! But carry-over may not have saved.', 'error', 5000);
+        });
+      } else {
+        showToast('Done! New week started. Share the new link.', 'success', 5000);
+      }
       startPolling();
     })
     .catch(function(){
