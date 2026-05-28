@@ -300,9 +300,17 @@ function apiRead(params) {
   return fetch(API + '?' + params, {mode:'cors'}).then(function(r){ return r.json(); });
 }
 
+// ── URL SESSION SYNC ──
+function updateURL(sessionId) {
+  if (!sessionId) return;
+  var url = window.location.origin + window.location.pathname + '?session=' + sessionId;
+  window.history.replaceState({}, '', url);
+}
+
 // ── INIT ──
 function init() {
   if (currentSessionId) {
+    updateURL(currentSessionId);
     document.getElementById('shareBtn').style.display = '';
     document.getElementById('liveIndicator').innerHTML = '<span class="live-pill"><span class="live-dot"></span> Live</span>';
     loadCurrentSession();
@@ -408,9 +416,10 @@ function newSession() {
   // Create session via GET and wait for confirmation before enabling add button
   apiRead('action=createSession&id='+newId+'&date='+date+'&driver=')
     .then(function() {
+      updateURL(newId);
       document.getElementById('addLocBtn').disabled = false;
       document.getElementById('addLocBtn').innerHTML = '<i class="ti ti-plus"></i> Add location';
-      showToast('New session created!', 'success');
+      showToast('New session created! Share the URL with your team.', 'success', 5000);
       startPolling();
     })
     .catch(function(){
@@ -753,14 +762,16 @@ function completeAndNew() {
           );
         });
         Promise.all(promises).then(function() {
+          updateURL(newId);
           currentLocations = carried;
           renderLocList();
-          showToast('Done! '+carryOver.length+' unresolved location'+(carryOver.length>1?'s':'')+' carried over.', 'success', 6000);
+          showToast('Done! '+carryOver.length+' unresolved location'+(carryOver.length>1?'s':'')+' carried over. Share the new URL!', 'success', 6000);
         }).catch(function(){
           showToast('Done! But carry-over may not have saved.', 'error', 5000);
         });
       } else {
-        showToast('Done! New week started. Share the new link.', 'success', 5000);
+        updateURL(newId);
+        showToast('Done! New week started. Share the new URL!', 'success', 5000);
       }
       startPolling();
     })
