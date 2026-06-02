@@ -275,10 +275,13 @@ textarea.finput{min-height:64px;resize:none}
 <script>
 var API = 'https://script.google.com/macros/s/AKfycby7rIOXg6hr3qXXjPpEgFzJA_nUogs0O-Ke0nTaYGb07QERWnTNGKNQG1BbqC6Irkv0aQ/exec';
 var SESSION_KEY = 'sda_session_id';
+// Clear any legacy localStorage session data on every load
+try { localStorage.removeItem('sda_session_id'); localStorage.removeItem('stanford_driveabout_v5'); localStorage.removeItem('stanford_driveabout_v4'); localStorage.removeItem('stanford_driveabout_v3'); localStorage.removeItem('stanford_driveabout_v2'); } catch(e) {}
+
 var urlParams = new URLSearchParams(window.location.search);
 var urlSessionId = urlParams.get('session');
 // ONLY use session from URL — never auto-load from localStorage
-// This forces a "New week" click on every fresh visit
+// Fresh visit to plain URL = no session, must click New week
 var currentSessionId = urlSessionId || null;
 
 var currentLocations = [];
