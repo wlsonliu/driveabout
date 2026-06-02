@@ -180,10 +180,10 @@ textarea.finput{min-height:64px;resize:none}
       </div>
       <button class="btn btn-red" id="addLocBtn" onclick="addLocation()"><i class="ti ti-plus"></i> Add location</button>
     </div>
-    <div id="lockedBanner" style="display:none;background:#fef3c7;border:1.5px solid #fcd34d;border-radius:10px;padding:12px 16px;margin-bottom:1rem;display:none;align-items:center;gap:10px">
+    <div id="lockedBanner" style="display:none;background:#fef3c7;border:1.5px solid #fcd34d;border-radius:10px;padding:12px 16px;margin-bottom:1rem;gap:10px">
       <i class="ti ti-lock" style="font-size:18px;color:#78350f;flex-shrink:0"></i>
       <div>
-        <div style="font-size:13px;font-weight:700;color:#78350f">Session completed</div>
+        <div style="font-size:13px;font-weight:700;color:#78350f" id="lockedTitle">Session completed</div>
         <div style="font-size:12px;color:#92400e;margin-top:2px">Click <strong>New week</strong> below to start a new drive-about session.</div>
       </div>
     </div>
@@ -281,7 +281,7 @@ var currentSessionId = urlSessionId || localStorage.getItem(SESSION_KEY) || null
 if (urlSessionId) localStorage.setItem(SESSION_KEY, urlSessionId);
 
 var currentLocations = [];
-var sessionLocked = false; // true when session is Completed — blocks adding locations
+var sessionLocked = true; // start locked — only unlocked once session status confirmed from Sheets
 var viewingSession = null;
 var pollTimer = null;
 var isSorting = false;
@@ -317,7 +317,7 @@ function updateLockUI() {
     if (addBtn) { addBtn.disabled = true; addBtn.innerHTML = '<i class="ti ti-lock"></i> Session completed — click New week to start'; }
     if (locName) { locName.disabled = true; locName.placeholder = 'Start a new week to add locations'; }
     ['locEvent','locSpaces','locNotes'].forEach(function(id){ var el=document.getElementById(id); if(el) el.disabled=true; });
-    if (lockedBanner) lockedBanner.style.display = '';
+    if (lockedBanner) lockedBanner.style.display = 'flex';
   } else {
     if (addBtn) { addBtn.disabled = false; addBtn.innerHTML = '<i class="ti ti-plus"></i> Add location'; }
     if (locName) { locName.disabled = false; locName.placeholder = 'e.g. Lot 1 — Serra St entrance'; }
@@ -335,11 +335,17 @@ function updateURL(sessionId) {
 
 // ── INIT ──
 function init() {
+  // Always start locked — loadCurrentSession will unlock if status is In Progress
+  sessionLocked = true;
+  updateLockUI();
   if (currentSessionId) {
     updateURL(currentSessionId);
     document.getElementById('shareBtn').style.display = '';
     document.getElementById('liveIndicator').innerHTML = '<span class="live-pill"><span class="live-dot"></span> Live</span>';
     loadCurrentSession();
+  } else {
+    // No session at all — show locked state prompting New week
+    updateLockUI();
   }
 }
 
@@ -393,7 +399,12 @@ function loadCurrentSession() {
       if (match) {
         document.getElementById('driveDate').value = match['Date'] ? String(match['Date']).substring(0,10) : '';
         document.getElementById('driverName').value = match['Driver'] || '';
-        sessionLocked = match['Status'] === 'Completed';
+        // Explicitly set lock based on confirmed status from Sheets
+        sessionLocked = (match['Status'] === 'Completed');
+        updateLockUI();
+      } else {
+        // Session ID in localStorage but not found in Sheets — lock it
+        sessionLocked = true;
         updateLockUI();
       }
       return apiRead('action=getLocations&sessionId='+currentSessionId);
