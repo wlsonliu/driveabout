@@ -180,6 +180,13 @@ textarea.finput{min-height:64px;resize:none}
       </div>
       <button class="btn btn-red" id="addLocBtn" onclick="addLocation()"><i class="ti ti-plus"></i> Add location</button>
     </div>
+    <div id="lockedBanner" style="display:none;background:#fef3c7;border:1.5px solid #fcd34d;border-radius:10px;padding:12px 16px;margin-bottom:1rem;display:none;align-items:center;gap:10px">
+      <i class="ti ti-lock" style="font-size:18px;color:#78350f;flex-shrink:0"></i>
+      <div>
+        <div style="font-size:13px;font-weight:700;color:#78350f">Session completed</div>
+        <div style="font-size:12px;color:#92400e;margin-top:2px">Click <strong>New week</strong> below to start a new drive-about session.</div>
+      </div>
+    </div>
     <div id="locList"></div>
     <div class="btn-row">
       <button class="btn btn-red" onclick="startChecklist()"><i class="ti ti-player-play"></i> Start drive-about</button>
@@ -274,6 +281,7 @@ var currentSessionId = urlSessionId || localStorage.getItem(SESSION_KEY) || null
 if (urlSessionId) localStorage.setItem(SESSION_KEY, urlSessionId);
 
 var currentLocations = [];
+var sessionLocked = false; // true when session is Completed — blocks adding locations
 var viewingSession = null;
 var pollTimer = null;
 var isSorting = false;
@@ -298,6 +306,24 @@ function apiWrite(action, data) {
 }
 function apiRead(params) {
   return fetch(API + '?' + params, {mode:'cors'}).then(function(r){ return r.json(); });
+}
+
+// ── LOCK UI ──
+function updateLockUI() {
+  var addBtn = document.getElementById('addLocBtn');
+  var locName = document.getElementById('locName');
+  var lockedBanner = document.getElementById('lockedBanner');
+  if (sessionLocked) {
+    if (addBtn) { addBtn.disabled = true; addBtn.innerHTML = '<i class="ti ti-lock"></i> Session completed — click New week to start'; }
+    if (locName) { locName.disabled = true; locName.placeholder = 'Start a new week to add locations'; }
+    ['locEvent','locSpaces','locNotes'].forEach(function(id){ var el=document.getElementById(id); if(el) el.disabled=true; });
+    if (lockedBanner) lockedBanner.style.display = '';
+  } else {
+    if (addBtn) { addBtn.disabled = false; addBtn.innerHTML = '<i class="ti ti-plus"></i> Add location'; }
+    if (locName) { locName.disabled = false; locName.placeholder = 'e.g. Lot 1 — Serra St entrance'; }
+    ['locEvent','locSpaces','locNotes'].forEach(function(id){ var el=document.getElementById(id); if(el) el.disabled=false; });
+    if (lockedBanner) lockedBanner.style.display = 'none';
+  }
 }
 
 // ── URL SESSION SYNC ──
@@ -367,6 +393,8 @@ function loadCurrentSession() {
       if (match) {
         document.getElementById('driveDate').value = match['Date'] ? String(match['Date']).substring(0,10) : '';
         document.getElementById('driverName').value = match['Driver'] || '';
+        sessionLocked = match['Status'] === 'Completed';
+        updateLockUI();
       }
       return apiRead('action=getLocations&sessionId='+currentSessionId);
     })
@@ -403,6 +431,7 @@ function newSession() {
   var newId = Date.now().toString();
   var date = new Date().toISOString().split('T')[0];
   currentSessionId = newId;
+  sessionLocked = false;
   localStorage.setItem(SESSION_KEY, newId);
   currentLocations = [];
   expandedIds = {};
@@ -452,9 +481,10 @@ function shareSession() {
 
 // ── LOCATIONS ──
 function addLocation() {
+  if (sessionLocked) { showToast('Session is completed — click New week first', 'error'); return; }
   var name = document.getElementById('locName').value.trim();
   if (!name) { document.getElementById('locName').focus(); return; }
-  if (!currentSessionId) { showToast('Create a session first', 'error'); return; }
+  if (!currentSessionId) { showToast('Click New week to start a session', 'error'); return; }
   var btn = document.getElementById('addLocBtn');
   btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader-2 spin"></i> Adding…';
   var newId = Date.now().toString();
@@ -466,13 +496,7 @@ function addLocation() {
     checked: false, status: '', issue: '',
     sortOrder: currentLocations.length + 1
   };
-  // Add to local array immediately so UI updates
-  currentLocations.push(loc);
-  ['locName','locEvent','locSpaces','locNotes'].forEach(function(id){ document.getElementById(id).value=''; });
-  renderLocList();
-  btn.disabled = false; btn.innerHTML = '<i class="ti ti-plus"></i> Add location';
-  showToast('Location added', 'success');
-  // Save to Sheets via GET in background
+  // Save to Sheets FIRST, then update UI
   apiRead('action=addLocation&id='+newId+
     '&sessionId='+currentSessionId+
     '&name='+encodeURIComponent(loc.name)+
@@ -480,7 +504,23 @@ function addLocation() {
     '&spaces='+loc.spaces+
     '&notes='+encodeURIComponent(loc.notes)+
     '&sortOrder='+loc.sortOrder
-  ).catch(function(){ showToast('Warning: location may not have saved to Sheets', 'error', 4000); });
+  ).then(function(res) {
+    // Use the ID confirmed by the server
+    var confirmedId = (res && res.id) ? String(res.id) : newId;
+    loc.id = confirmedId;
+    currentLocations.push(loc);
+    ['locName','locEvent','locSpaces','locNotes'].forEach(function(id){ document.getElementById(id).value=''; });
+    renderLocList();
+    btn.disabled = false; btn.innerHTML = '<i class="ti ti-plus"></i> Add location';
+    showToast('Location added', 'success');
+  }).catch(function(){
+    // Still add locally even if sheets fails
+    currentLocations.push(loc);
+    ['locName','locEvent','locSpaces','locNotes'].forEach(function(id){ document.getElementById(id).value=''; });
+    renderLocList();
+    btn.disabled = false; btn.innerHTML = '<i class="ti ti-plus"></i> Add location';
+    showToast('Warning: location may not have saved to Sheets', 'error', 4000);
+  });
 }
 
 function removeLocation(id) {
@@ -712,6 +752,7 @@ function completeAndNew() {
   if (!confirm('Mark complete and start a new week?')) return;
   var oldSessionId = currentSessionId;
   var oldLocs = currentLocations.slice(); // save before clearing
+  sessionLocked = true; // lock immediately so no locations can be added
   var newId = Date.now().toString();
   var date = new Date().toISOString().split('T')[0];
   var driver = document.getElementById('driverName').value.trim();
@@ -743,7 +784,7 @@ function completeAndNew() {
       if (carryOver.length > 0) {
         var carried = [];
         var promises = carryOver.map(function(l, i) {
-          var carryId = Date.now().toString() + i;
+          var carryId = (parseInt(newId) + i + 1).toString();
           var carryLoc = {
             id: carryId, name: l.name, event: l.event,
             spaces: l.spaces, notes: l.notes,
