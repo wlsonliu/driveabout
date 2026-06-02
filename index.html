@@ -314,7 +314,11 @@ function updateLockUI() {
   var locName = document.getElementById('locName');
   var lockedBanner = document.getElementById('lockedBanner');
   if (sessionLocked) {
-    if (addBtn) { addBtn.disabled = true; addBtn.innerHTML = '<i class="ti ti-lock"></i> Session completed — click New week to start'; }
+    if (addBtn && !addBtn.innerHTML.includes('spin')) {
+      // Only update if not showing spinner
+      addBtn.disabled = true;
+      addBtn.innerHTML = '<i class="ti ti-lock"></i> Session completed — click New week to start';
+    }
     if (locName) { locName.disabled = true; locName.placeholder = 'Start a new week to add locations'; }
     ['locEvent','locSpaces','locNotes'].forEach(function(id){ var el=document.getElementById(id); if(el) el.disabled=true; });
     if (lockedBanner) lockedBanner.style.display = 'flex';
@@ -450,22 +454,25 @@ function newSession() {
   document.getElementById('driverName').value = '';
   document.getElementById('shareBtn').style.display = '';
   document.getElementById('liveIndicator').innerHTML = '<span class="live-pill"><span class="live-dot"></span> Live</span>';
-  document.getElementById('addLocBtn').disabled = true;
+  sessionLocked = true; // lock while creating
+  updateLockUI();
   document.getElementById('addLocBtn').innerHTML = '<i class="ti ti-loader-2 spin"></i> Setting up session…';
   renderLocList();
   // Create session via GET and wait for confirmation before enabling add button
   apiRead('action=createSession&id='+newId+'&date='+date+'&driver=')
     .then(function() {
       updateURL(newId);
-      document.getElementById('addLocBtn').disabled = false;
-      document.getElementById('addLocBtn').innerHTML = '<i class="ti ti-plus"></i> Add location';
+      sessionLocked = false; // confirmed — unlock
+      updateLockUI();
       showToast('New session created! Share the URL with your team.', 'success', 5000);
       startPolling();
     })
     .catch(function(){
-      document.getElementById('addLocBtn').disabled = false;
-      document.getElementById('addLocBtn').innerHTML = '<i class="ti ti-plus"></i> Add location';
-      showToast('Warning: session may not have saved to Sheets', 'error', 5000);
+      // Even if sheets call fails, still unlock locally so team can work
+      sessionLocked = false;
+      updateLockUI();
+      showToast('Session started locally — Sheets sync may have failed', 'error', 5000);
+      startPolling();
     });
 }
 
