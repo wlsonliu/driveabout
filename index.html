@@ -277,8 +277,9 @@ var API = 'https://script.google.com/macros/s/AKfycby7rIOXg6hr3qXXjPpEgFzJA_nUog
 var SESSION_KEY = 'sda_session_id';
 var urlParams = new URLSearchParams(window.location.search);
 var urlSessionId = urlParams.get('session');
-var currentSessionId = urlSessionId || localStorage.getItem(SESSION_KEY) || null;
-if (urlSessionId) localStorage.setItem(SESSION_KEY, urlSessionId);
+// ONLY use session from URL — never auto-load from localStorage
+// This forces a "New week" click on every fresh visit
+var currentSessionId = urlSessionId || null;
 
 var currentLocations = [];
 var sessionLocked = true; // start locked — only unlocked once session status confirmed from Sheets
@@ -335,6 +336,7 @@ function updateURL(sessionId) {
   if (!sessionId) return;
   var url = window.location.origin + window.location.pathname + '?session=' + sessionId;
   window.history.replaceState({}, '', url);
+  // Never persist to localStorage — session must come from URL only
 }
 
 // ── INIT ──
@@ -446,8 +448,7 @@ function newSession() {
   var newId = Date.now().toString();
   var date = new Date().toISOString().split('T')[0];
   currentSessionId = newId;
-  sessionLocked = false;
-  localStorage.setItem(SESSION_KEY, newId);
+  sessionLocked = true; // lock while creating new session
   currentLocations = [];
   expandedIds = {};
   document.getElementById('driveDate').value = date;
@@ -777,8 +778,7 @@ function completeAndNew() {
   // Mark old session complete
   apiWrite('updateSession', {id:oldSessionId, status:'Completed'});
   currentSessionId = newId;
-  localStorage.setItem(SESSION_KEY, newId);
-  currentLocations = [];
+    currentLocations = [];
   expandedIds = {};
   document.getElementById('driveDate').value = date;
   document.getElementById('driverName').value = driver;
