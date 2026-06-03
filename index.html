@@ -158,17 +158,17 @@ textarea.finput{min-height:64px;resize:none}
       </div>
       <div class="form-grid full">
         <div class="fgroup">
-          <label class="flabel">Location name</label>
+          <label class="flabel">Location name <span style="color:var(--red)">*</span></label>
           <input class="finput" type="text" id="locName" placeholder="e.g. Lot 1 — Serra St entrance">
         </div>
       </div>
       <div class="form-grid">
         <div class="fgroup">
-          <label class="flabel">Event name</label>
+          <label class="flabel">Event name <span style="color:var(--red)">*</span></label>
           <input class="finput" type="text" id="locEvent" placeholder="e.g. Football vs UCLA">
         </div>
         <div class="fgroup">
-          <label class="flabel">Total spaces</label>
+          <label class="flabel">Total spaces <span style="color:var(--red)">*</span></label>
           <input class="finput" type="number" id="locSpaces" placeholder="e.g. 120" min="0">
         </div>
       </div>
@@ -515,8 +515,16 @@ function shareSession() {
 // ── LOCATIONS ──
 function addLocation() {
   if (sessionLocked) { showToast('Session is completed — click New week first', 'error'); return; }
+  var date = document.getElementById('driveDate').value.trim();
+  var driver = document.getElementById('driverName').value.trim();
+  if (!date) { document.getElementById('driveDate').focus(); showToast('Date is required', 'error'); return; }
+  if (!driver) { document.getElementById('driverName').focus(); showToast('Driver / Team name is required', 'error'); return; }
   var name = document.getElementById('locName').value.trim();
-  if (!name) { document.getElementById('locName').focus(); return; }
+  if (!name) { document.getElementById('locName').focus(); showToast('Location name is required', 'error'); return; }
+  var event = document.getElementById('locEvent').value.trim();
+  if (!event) { document.getElementById('locEvent').focus(); showToast('Event name is required', 'error'); return; }
+  var spaces = document.getElementById('locSpaces').value.trim();
+  if (!spaces) { document.getElementById('locSpaces').focus(); showToast('Total spaces is required', 'error'); return; }
   if (!currentSessionId) { showToast('Click New week to start a session', 'error'); return; }
   var btn = document.getElementById('addLocBtn');
   btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader-2 spin"></i> Adding…';
@@ -648,7 +656,17 @@ function initDragDrop() {
 
 // ── CHECKLIST ──
 function startChecklist() {
-  if (!currentLocations.length) { showToast('Add at least one location first','error'); return; }
+  var date = document.getElementById('driveDate').value.trim();
+  var driver = document.getElementById('driverName').value.trim();
+  if (!date) {
+    document.getElementById('driveDate').focus();
+    showToast('Date is required', 'error'); return;
+  }
+  if (!driver) {
+    document.getElementById('driverName').focus();
+    showToast('Driver / Team name is required', 'error'); return;
+  }
+  if (!currentLocations.length) { showToast('Add at least one location first', 'error'); return; }
   switchTab('checklist');
 }
 
