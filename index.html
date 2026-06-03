@@ -141,11 +141,11 @@ textarea.finput{min-height:64px;resize:none}
       </div>
       <div class="form-grid">
         <div class="fgroup">
-          <label class="flabel">Date</label>
+          <label class="flabel">Date <span style="color:var(--red)">*</span></label>
           <input class="finput" type="date" id="driveDate">
         </div>
         <div class="fgroup">
-          <label class="flabel">Driver / Team</label>
+          <label class="flabel">Driver / Team <span style="color:var(--red)">*</span></label>
           <input class="finput" type="text" id="driverName" placeholder="e.g. Wilson, Team A">
         </div>
       </div>
@@ -445,11 +445,22 @@ function statusToSheet(s) {
 }
 
 function newSession() {
+  var date = document.getElementById('driveDate').value.trim();
+  var driver = document.getElementById('driverName').value.trim();
+  if (!date) {
+    document.getElementById('driveDate').focus();
+    showToast('Please enter a date first', 'error');
+    return;
+  }
+  if (!driver) {
+    document.getElementById('driverName').focus();
+    showToast('Please enter a driver / team name first', 'error');
+    return;
+  }
   if (currentLocations.length > 0) {
     if (!confirm('Start a new week? Current session stays in History.')) return;
   }
   var newId = Date.now().toString();
-  var date = new Date().toISOString().split('T')[0];
   currentSessionId = newId;
   sessionLocked = true; // lock while creating new session
   currentLocations = [];
@@ -463,7 +474,7 @@ function newSession() {
   document.getElementById('addLocBtn').innerHTML = '<i class="ti ti-loader-2 spin"></i> Setting up session…';
   renderLocList();
   // Create session via GET and wait for confirmation before enabling add button
-  apiRead('action=createSession&id='+newId+'&date='+date+'&driver=')
+  apiRead('action=createSession&id='+newId+'&date='+date+'&driver='+encodeURIComponent(driver))
     .then(function() {
       updateURL(newId);
       sessionLocked = false; // confirmed — unlock
