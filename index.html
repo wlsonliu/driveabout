@@ -172,6 +172,16 @@ textarea.finput{min-height:64px;resize:none}
           <input class="finput" type="number" id="locSpaces" placeholder="e.g. 120" min="0">
         </div>
       </div>
+      <div class="form-grid">
+        <div class="fgroup">
+          <label class="flabel">Event start date <span style="color:var(--red)">*</span></label>
+          <input class="finput" type="date" id="locEventStart">
+        </div>
+        <div class="fgroup">
+          <label class="flabel">Event end date <span style="color:var(--hint);font-size:10px">(leave blank if single day)</span></label>
+          <input class="finput" type="date" id="locEventEnd">
+        </div>
+      </div>
       <div class="form-grid full" style="margin-bottom:14px">
         <div class="fgroup">
           <label class="flabel">Notes (optional)</label>
@@ -312,6 +322,13 @@ function apiRead(params) {
   return fetch(API + '?' + params, {mode:'cors'}).then(function(r){ return r.json(); });
 }
 
+// ── HELPERS ──
+function formatDate(dateStr) {
+  if (!dateStr) return '';
+  var d = new Date(dateStr + 'T12:00:00');
+  return d.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+}
+
 // ── LOCK UI ──
 function updateLockUI() {
   var addBtn = document.getElementById('addLocBtn');
@@ -433,6 +450,7 @@ function rowToLoc(headers, row) {
   var o={}; headers.forEach(function(h,i){o[h]=row[i];}); 
   return {
     id: String(o['ID']||''), name: o['Name']||'', event: o['Event']||'',
+    eventDate: o['EventDate']||'',
     spaces: o['Spaces']||0, notes: o['Notes']||'',
     checked: o['IsChecked']===true||o['IsChecked']==='TRUE',
     status: o['SignageStatus']==='All good'?'ok':o['SignageStatus']==='Needs attention'?'warn':o['SignageStatus']==='Sign missing'?'bad':'',
@@ -525,13 +543,21 @@ function addLocation() {
   if (!event) { document.getElementById('locEvent').focus(); showToast('Event name is required', 'error'); return; }
   var spaces = document.getElementById('locSpaces').value.trim();
   if (!spaces) { document.getElementById('locSpaces').focus(); showToast('Total spaces is required', 'error'); return; }
+  var eventStart = document.getElementById('locEventStart').value.trim();
+  if (!eventStart) { document.getElementById('locEventStart').focus(); showToast('Event start date is required', 'error'); return; }
   if (!currentSessionId) { showToast('Click New week to start a session', 'error'); return; }
   var btn = document.getElementById('addLocBtn');
   btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader-2 spin"></i> Adding…';
   var newId = Date.now().toString();
+  var eventStart = document.getElementById('locEventStart').value.trim();
+  var eventEnd = document.getElementById('locEventEnd').value.trim();
+  var eventDateStr = eventStart ? (eventEnd && eventEnd !== eventStart
+    ? formatDate(eventStart) + ' – ' + formatDate(eventEnd)
+    : formatDate(eventStart)) : '';
   var loc = {
     id: newId, name: name,
     event: document.getElementById('locEvent').value.trim(),
+    eventDate: eventDateStr,
     spaces: parseInt(document.getElementById('locSpaces').value)||0,
     notes: document.getElementById('locNotes').value.trim(),
     checked: false, status: '', issue: '',
@@ -542,6 +568,7 @@ function addLocation() {
     '&sessionId='+currentSessionId+
     '&name='+encodeURIComponent(loc.name)+
     '&event='+encodeURIComponent(loc.event)+
+    '&eventDate='+encodeURIComponent(loc.eventDate||'')+
     '&spaces='+loc.spaces+
     '&notes='+encodeURIComponent(loc.notes)+
     '&sortOrder='+loc.sortOrder
@@ -550,14 +577,14 @@ function addLocation() {
     var confirmedId = (res && res.id) ? String(res.id) : newId;
     loc.id = confirmedId;
     currentLocations.push(loc);
-    ['locName','locEvent','locSpaces','locNotes'].forEach(function(id){ document.getElementById(id).value=''; });
+    ['locName','locEvent','locSpaces','locNotes','locEventStart','locEventEnd'].forEach(function(id){ document.getElementById(id).value=''; });
     renderLocList();
     btn.disabled = false; btn.innerHTML = '<i class="ti ti-plus"></i> Add location';
     showToast('Location added', 'success');
   }).catch(function(){
     // Still add locally even if sheets fails
     currentLocations.push(loc);
-    ['locName','locEvent','locSpaces','locNotes'].forEach(function(id){ document.getElementById(id).value=''; });
+    ['locName','locEvent','locSpaces','locNotes','locEventStart','locEventEnd'].forEach(function(id){ document.getElementById(id).value=''; });
     renderLocList();
     btn.disabled = false; btn.innerHTML = '<i class="ti ti-plus"></i> Add location';
     showToast('Warning: location may not have saved to Sheets', 'error', 4000);
@@ -604,7 +631,7 @@ function renderLocList() {
       '<div class="drag-handle"><span></span><span></span><span></span></div>' +
       '<div class="loc-num">'+(i+1)+'</div>' +
       '<div class="loc-info"><div class="loc-name">'+l.name+'</div>' +
-      '<div class="loc-meta">'+(l.event||'No event')+' · '+(l.spaces||'—')+' spaces'+(l.notes?' · '+l.notes:'')+'</div></div>' +
+      '<div class="loc-meta">'+(l.event||'No event')+(l.eventDate?' · '+l.eventDate:'')+' · '+(l.spaces||'—')+' spaces'+(l.notes?' · '+l.notes:'')+'</div></div>' +
       '<div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0">' +
         '<button class="icon-btn" style="width:26px;height:26px;font-size:13px" onclick="moveLocation('+i+',-1)"'+(i===0?' disabled':'')+'><i class="ti ti-chevron-up"></i></button>' +
         '<button class="icon-btn" style="width:26px;height:26px;font-size:13px" onclick="moveLocation('+i+',1)"'+(i===currentLocations.length-1?' disabled':'')+'><i class="ti ti-chevron-down"></i></button>' +
@@ -685,7 +712,7 @@ function renderChecklist() {
       '<div class="cl-top">' +
         '<div class="cl-num">'+(i+1)+'</div>' +
         '<div class="cl-info"><div class="cl-name">'+l.name+'</div>' +
-        '<div class="cl-sub">'+(l.event||'No event')+' · '+(l.spaces||'—')+' spaces</div></div>' +
+        '<div class="cl-sub">'+(l.event||'No event')+(l.eventDate?' · '+l.eventDate:'')+' · '+(l.spaces||'—')+' spaces</div></div>' +
         '<div class="cl-actions">' +
           '<button class="icon-btn" onclick="toggleExpand(\''+l.id+'\')"><i class="ti ti-notes"></i></button>' +
           '<button class="chk-btn '+(l.checked?'done':'')+'" id="chk-'+l.id+'" onclick="toggleCheck(\''+l.id+'\')"><i class="ti ti-check"></i></button>' +
@@ -953,7 +980,7 @@ function openHistoryDetail(sid, sdate, sdriver) {
                   l.status==='warn'?'<span class="badge badge-warn">Needs attention</span>':
                   l.status==='bad'?'<span class="badge badge-bad">Sign missing</span>':
                   '<span class="badge badge-skip">Not checked</span>';
-        return '<div class="report-item"><div style="flex:1;min-width:0"><div class="ri-name">'+(i+1)+'. '+l.name+'</div><div class="ri-sub">'+(l.event||'—')+' · '+(l.spaces||'—')+' spaces</div>'+(l.issue?'<div class="ri-note"><i class="ti ti-message-circle" style="font-size:12px"></i> '+l.issue+'</div>':'')+'</div><div>'+badge+'</div></div>';
+        return '<div class="report-item"><div style="flex:1;min-width:0"><div class="ri-name">'+(i+1)+'. '+l.name+'</div><div class="ri-sub">'+(l.event||'—')+(l.eventDate?' · '+l.eventDate:'')+' · '+(l.spaces||'—')+' spaces</div>'+(l.issue?'<div class="ri-note"><i class="ti ti-message-circle" style="font-size:12px"></i> '+l.issue+'</div>':'')+'</div><div>'+badge+'</div></div>';
       }).join('');
     }).catch(function(){document.getElementById('hd-body').innerHTML='<p class="empty-msg">Error loading.</p>';});
 }
