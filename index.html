@@ -453,7 +453,11 @@ function rowToLoc(headers, row) {
   var o={}; headers.forEach(function(h,i){o[h]=row[i];}); 
   return {
     id: String(o['ID']||''), name: o['Name']||'', event: o['Event']||'',
-    eventDate: o['EventDate']||'',
+    eventStart: o['EventStartDate']||'',
+    eventEnd: o['EventEndDate']||'',
+    eventDate: o['EventStartDate'] ? (o['EventEndDate'] && o['EventEndDate'] !== o['EventStartDate']
+      ? formatDate(String(o['EventStartDate'])) + ' – ' + formatDate(String(o['EventEndDate']))
+      : formatDate(String(o['EventStartDate']))) : '',
     spaces: o['Spaces']||0, notes: o['Notes']||'',
     checked: o['IsChecked']===true||o['IsChecked']==='TRUE',
     status: o['SignageStatus']==='All good'?'ok':o['SignageStatus']==='Needs attention'?'warn':o['SignageStatus']==='Sign missing'?'bad':'',
@@ -552,15 +556,17 @@ function addLocation() {
   var btn = document.getElementById('addLocBtn');
   btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader-2 spin"></i> Adding…';
   var newId = Date.now().toString();
-  var eventStart = document.getElementById('locEventStart').value.trim();
-  var eventEnd = document.getElementById('locEventEnd').value.trim();
-  var eventDateStr = eventStart ? (eventEnd && eventEnd !== eventStart
-    ? formatDate(eventStart) + ' – ' + formatDate(eventEnd)
-    : formatDate(eventStart)) : '';
+  var eventStartVal = document.getElementById('locEventStart').value.trim();
+  var eventEndVal = document.getElementById('locEventEnd').value.trim();
+  var eventDateDisplay = eventStartVal ? (eventEndVal && eventEndVal !== eventStartVal
+    ? formatDate(eventStartVal) + ' – ' + formatDate(eventEndVal)
+    : formatDate(eventStartVal)) : '';
   var loc = {
     id: newId, name: name,
     event: document.getElementById('locEvent').value.trim(),
-    eventDate: eventDateStr,
+    eventStart: eventStartVal,
+    eventEnd: eventEndVal,
+    eventDate: eventDateDisplay,
     spaces: parseInt(document.getElementById('locSpaces').value)||0,
     notes: document.getElementById('locNotes').value.trim(),
     checked: false, status: '', issue: '',
@@ -578,7 +584,8 @@ function addLocation() {
     '&sessionId=' + currentSessionId +
     '&name=' + encodeURIComponent(loc.name) +
     '&event=' + encodeURIComponent(loc.event) +
-    '&eventDate=' + encodeURIComponent(loc.eventDate || '') +
+    '&eventStart=' + encodeURIComponent(loc.eventStart || '') +
+    '&eventEnd=' + encodeURIComponent(loc.eventEnd || '') +
     '&spaces=' + loc.spaces +
     '&notes=' + encodeURIComponent(loc.notes) +
     '&sortOrder=' + loc.sortOrder
@@ -871,7 +878,8 @@ function completeAndNew() {
             '&sessionId=' + newId +
             '&name=' + encodeURIComponent(l.name) +
             '&event=' + encodeURIComponent(l.event) +
-            '&eventDate=' + encodeURIComponent(l.eventDate || '') +
+            '&eventStart=' + encodeURIComponent(l.eventStart || '') +
+            '&eventEnd=' + encodeURIComponent(l.eventEnd || '') +
             '&spaces=' + l.spaces +
             '&notes=' + encodeURIComponent('Carried from last week: ' + (l.issue||'')) +
             '&sortOrder=' + (i+1)
