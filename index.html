@@ -328,8 +328,16 @@ function apiRead(params) {
 // ── HELPERS ──
 function formatDate(dateStr) {
   if (!dateStr) return '';
-  var d = new Date(dateStr + 'T12:00:00');
-  return d.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+  // Handle YYYY-MM-DD format safely
+  var parts = String(dateStr).split('-');
+  if (parts.length === 3) {
+    var year = parseInt(parts[0]);
+    var month = parseInt(parts[1]) - 1;
+    var day = parseInt(parts[2]);
+    var d = new Date(year, month, day);
+    return d.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+  }
+  return dateStr; // return as-is if not a date format
 }
 
 // ── LOCK UI ──
