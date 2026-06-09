@@ -320,15 +320,7 @@ function apiWrite(action, data) {
     body: JSON.stringify(data)
   }).then(function(){ return {success:true}; });
 }
-// Confirmed POST — uses cors, waits for response (for addLocation)
-function apiPost(action, data) {
-  data.action = action;
-  return fetch(API, {
-    method: 'POST',
-    headers: {'Content-Type': 'text/plain'},
-    body: JSON.stringify(data)
-  }).then(function(r){ return r.json(); });
-}
+
 function apiRead(params) {
   return fetch(API + '?' + params, {mode:'cors'}).then(function(r){ return r.json(); });
 }
