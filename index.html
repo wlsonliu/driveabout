@@ -310,6 +310,7 @@ function showToast(msg, type, dur) {
   t.textContent = msg; t.className = 'toast '+type; t.classList.add('show');
   setTimeout(function(){ t.classList.remove('show'); }, dur);
 }
+// Fire-and-forget writes (no-cors) — for updates where we don't need a response
 function apiWrite(action, data) {
   data.action = action;
   return fetch(API, {
@@ -317,6 +318,15 @@ function apiWrite(action, data) {
     headers: {'Content-Type': 'text/plain'},
     body: JSON.stringify(data)
   }).then(function(){ return {success:true}; });
+}
+// Confirmed POST — uses cors, waits for response (for addLocation)
+function apiPost(action, data) {
+  data.action = action;
+  return fetch(API, {
+    method: 'POST',
+    headers: {'Content-Type': 'text/plain'},
+    body: JSON.stringify(data)
+  }).then(function(r){ return r.json(); });
 }
 function apiRead(params) {
   return fetch(API + '?' + params, {mode:'cors'}).then(function(r){ return r.json(); });
@@ -569,8 +579,8 @@ function addLocation() {
   renderLocList();
   btn.disabled = false; btn.innerHTML = '<i class="ti ti-plus"></i> Add location';
   showToast('Location added', 'success');
-  // Save to Sheets via POST (handles special chars in eventDate)
-  apiWrite('addLocation', {
+  // Save to Sheets via confirmed POST
+  apiPost('addLocation', {
     id: newId,
     sessionId: currentSessionId,
     name: loc.name,
@@ -579,6 +589,8 @@ function addLocation() {
     spaces: loc.spaces,
     notes: loc.notes,
     sortOrder: loc.sortOrder
+  }).catch(function(){
+    showToast('Warning: location may not have saved to Sheets', 'error', 4000);
   });
 }
 
@@ -861,14 +873,16 @@ function completeAndNew() {
             carriedOver: true
           };
           carried.push(carryLoc);
-          return apiRead('action=addLocation&id='+carryId+
-            '&sessionId='+newId+
-            '&name='+encodeURIComponent(l.name)+
-            '&event='+encodeURIComponent(l.event)+
-            '&spaces='+l.spaces+
-            '&notes='+encodeURIComponent('⚠️ Carried from last week: '+l.issue)+
-            '&sortOrder='+(i+1)
-          );
+          return apiPost('addLocation', {
+            id: carryId,
+            sessionId: newId,
+            name: l.name,
+            event: l.event,
+            eventDate: l.eventDate || '',
+            spaces: l.spaces,
+            notes: '⚠️ Carried from last week: ' + (l.issue||''),
+            sortOrder: i+1
+          });
         });
         Promise.all(promises).then(function() {
           updateURL(newId);
