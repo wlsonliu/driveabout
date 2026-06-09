@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<!-- v1.9.2 -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Drive-About Signage Checklist</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --red:#8C1515;--red-dark:#6d0f0f;--red-light:#fdf2f2;
+  --card:#fff;--border:#e5e7eb;--border-strong:#d1d5db;--bg:#f4f4f5;
+  --text:#111827;--muted:#6b7280;--hint:#9ca3af;
+  --green:#059669;--green-bg:#d1fae5;--green-text:#065f46;
+  --amber:#d97706;--amber-bg:#fef3c7;--amber-text:#78350f;
+  --red-err:#dc2626;--red-err-bg:#fee2e2;--red-err-text:#7f1d1d;
+  --blue:#1d4ed8;--blue-bg:#dbeafe;--blue-text:#1e40af;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);min-height:100vh}
+.app{max-width:680px;margin:0 auto;padding:1.25rem 1rem}
+.tabs{display:flex;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:5px;gap:4px;margin-bottom:1.25rem}
+.tab{flex:1;padding:10px 8px;border-radius:8px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;text-align:center;border:none;background:transparent;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:5px}
+.tab i{font-size:15px}
+.tab.active{background:var(--red);color:#fff}
+.tab:not(.active):hover{background:var(--bg)}
+.section{display:none}.section.active{display:block}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.25rem;margin-bottom:1rem}
+.card-header{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.card-icon{width:30px;height:30px;background:var(--red-light);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.card-icon i{font-size:16px;color:var(--red)}
+.card-icon.blue{background:var(--blue-bg)}.card-icon.blue i{color:var(--blue)}
+.card-title{font-size:14px;font-weight:700;color:var(--text)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.form-grid.full{grid-template-columns:1fr}
+.fgroup{display:flex;flex-direction:column;gap:5px}
+.flabel{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em}
+.finput{font-size:14px;color:var(--text);background:#fafafa;border:1.5px solid var(--border-strong);border-radius:9px;padding:9px 12px;width:100%;transition:border-color 0.15s;outline:none}
+.finput:focus{border-color:var(--red);background:#fff}
+.finput::placeholder{color:var(--hint)}
+textarea.finput{min-height:64px;resize:none}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px 18px;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all 0.15s}
+.btn i{font-size:15px}
+.btn-red{background:var(--red);color:#fff;width:100%}
+.btn-red:hover{background:var(--red-dark)}.btn-red:active{transform:scale(0.98)}
+.btn-ghost{background:var(--card);border:1.5px solid var(--border-strong);color:var(--muted)}
+.btn-ghost:hover{background:var(--bg)}
+.btn-sm{padding:7px 14px;font-size:12px;border-radius:8px;width:auto}
+.btn-row{display:flex;gap:10px}
+.btn-row .btn{flex:1}
+.btn:disabled{opacity:0.5;cursor:not-allowed}
+.loc-list{display:flex;flex-direction:column;gap:8px}
+.loc-item{background:#fafafa;border:1.5px solid var(--border);border-radius:10px;padding:11px 14px;display:flex;align-items:center;gap:12px;user-select:none;transition:box-shadow 0.15s}
+.loc-item.drag-over{border-color:var(--red);box-shadow:0 0 0 2px rgba(140,21,21,0.15)}
+.loc-item.dragging{opacity:0.4}
+.drag-handle{display:flex;flex-direction:column;gap:3px;cursor:grab;padding:4px 2px;flex-shrink:0;opacity:0.35}
+.drag-handle span{display:block;width:16px;height:2px;background:var(--muted);border-radius:2px}
+.loc-num{width:28px;height:28px;border-radius:50%;background:var(--red);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.loc-info{flex:1;min-width:0}
+.loc-name{font-size:14px;font-weight:600;color:var(--text)}
+.loc-meta{font-size:12px;color:var(--muted);margin-top:2px}
+.del-btn{background:none;border:1.5px solid #fca5a5;color:#dc2626;border-radius:7px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;flex-shrink:0}
+.del-btn:hover{background:#fef2f2}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1rem}
+.stat-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 10px;text-align:center}
+.stat-num{font-size:26px;font-weight:700;color:var(--text)}
+.stat-lbl{font-size:11px;color:var(--muted);margin-top:3px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em}
+.prog-wrap{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:1rem}
+.prog-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.prog-label{font-size:13px;font-weight:600;color:var(--text)}
+.prog-pct{font-size:14px;font-weight:700;color:var(--red)}
+.prog-track{height:8px;background:var(--bg);border-radius:20px;overflow:hidden;border:1px solid var(--border)}
+.prog-fill{height:100%;background:var(--red);border-radius:20px;transition:width 0.4s}
+.cl-card{background:var(--card);border:1.5px solid var(--border);border-radius:13px;margin-bottom:10px;overflow:hidden;transition:border-color 0.2s}
+.cl-card.s-ok{border-color:#6ee7b7}.cl-card.s-warn{border-color:#fcd34d}.cl-card.s-bad{border-color:#fca5a5}
+.cl-top{display:flex;align-items:center;gap:12px;padding:13px 14px}
+.cl-num{width:32px;height:32px;border-radius:50%;background:var(--bg);border:1.5px solid var(--border);font-size:13px;font-weight:700;color:var(--muted);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cl-card.s-ok .cl-num,.cl-card.s-done .cl-num{background:#d1fae5;border-color:#6ee7b7;color:#065f46}
+.cl-card.s-warn .cl-num{background:#fef3c7;border-color:#fcd34d;color:#78350f}
+.cl-card.s-bad .cl-num{background:#fee2e2;border-color:#fca5a5;color:#7f1d1d}
+.cl-info{flex:1;min-width:0}
+.cl-name{font-size:14px;font-weight:600;color:var(--text)}
+.cl-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.cl-actions{display:flex;gap:8px}
+.icon-btn{background:var(--card);border:1.5px solid var(--border);color:var(--muted);border-radius:8px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px}
+.chk-btn{width:34px;height:34px;border-radius:50%;border:2px solid var(--border-strong);background:var(--card);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:17px;color:var(--muted);transition:all 0.15s}
+.chk-btn.done{background:var(--green);border-color:var(--green);color:#fff}
+.cl-expand{display:none;padding:13px 14px;border-top:1px solid var(--border);background:#fafafa}
+.cl-card.expanded .cl-expand{display:block}
+.expand-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.chip{padding:7px 14px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--card);color:var(--muted);transition:all 0.15s;display:inline-flex;align-items:center;gap:5px}
+.chip.ok.on{background:var(--green-bg);color:var(--green-text);border-color:#6ee7b7}
+.chip.warn.on{background:var(--amber-bg);color:var(--amber-text);border-color:#fcd34d}
+.chip.bad.on{background:var(--red-err-bg);color:var(--red-err-text);border-color:#fca5a5}
+.report-item{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid #f3f4f6}
+.report-item:last-child{border-bottom:none}
+.ri-name{font-size:13px;font-weight:600;color:var(--text)}
+.ri-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.ri-note{font-size:12px;color:var(--amber);margin-top:3px;display:flex;align-items:center;gap:4px}
+.badge{padding:4px 11px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap}
+.badge-ok{background:var(--green-bg);color:var(--green-text)}
+.badge-warn{background:var(--amber-bg);color:var(--amber-text)}
+.badge-bad{background:var(--red-err-bg);color:var(--red-err-text)}
+.badge-skip{background:var(--bg);color:var(--muted)}
+.empty-msg{text-align:center;color:var(--hint);font-size:13px;padding:1.5rem}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);padding:12px 22px;border-radius:10px;font-size:14px;font-weight:600;color:#fff;z-index:999;opacity:0;transition:opacity 0.3s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1}
+.toast.success{background:#059669}.toast.error{background:#dc2626}.toast.info{background:#1d4ed8}
+.live-pill{display:inline-flex;align-items:center;gap:5px;background:var(--green-bg);color:var(--green-text);border-radius:20px;padding:4px 12px;font-size:12px;font-weight:700}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.spin{animation:spin 1s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.history-item{background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:13px 16px;margin-bottom:10px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color 0.15s}
+.history-item:hover{border-color:var(--red)}
+</style>
+</head>
+<body>
+<div id="toast" class="toast"></div>
+<div class="app">
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('setup')"><i class="ti ti-settings"></i> Setup</button>
+    <button class="tab" onclick="switchTab('checklist')"><i class="ti ti-map-pin"></i> Checklist</button>
+    <button class="tab" onclick="switchTab('report')"><i class="ti ti-report"></i> Report</button>
+    <button class="tab" onclick="switchTab('history')"><i class="ti ti-history"></i> History</button>
+  </div>
+
+  <!-- SETUP -->
+  <div class="section active" id="tab-setup">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon"><i class="ti ti-calendar"></i></div>
+        <div class="card-title">Active session</div>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+          <button class="btn btn-ghost btn-sm" id="shareBtn" onclick="shareSession()" style="display:none;width:auto;padding:5px 12px;font-size:12px"><i class="ti ti-share"></i> Share link</button>
+          <div id="liveIndicator"></div>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="fgroup">
+          <label class="flabel">Date <span style="color:var(--red)">*</span></label>
+          <input class="finput" type="date" id="driveDate">
+        </div>
+        <div class="fgroup">
+          <label class="flabel">Driver / Team <span style="color:var(--red)">*</span></label>
+          <input class="finput" type="text" id="driverName" placeholder="e.g. Wilson, Team A">
+        </div>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="saveSessionMeta()" style="width:auto"><i class="ti ti-device-floppy"></i> Save session info</button>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon"><i class="ti ti-map-pin"></i></div>
+        <div class="card-title">Add a location</div>
+      </div>
+      <div class="form-grid full">
+        <div class="fgroup">
+          <label class="flabel">Location name <span style="color:var(--red)">*</span></label>
+          <input class="finput" type="text" id="locName" placeholder="e.g. Lot 1 — Serra St entrance">
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="fgroup">
+          <label class="flabel">Event name <span style="color:var(--red)">*</span></label>
+          <input class="finput" type="text" id="locEvent" placeholder="e.g. Football vs UCLA">
+        </div>
+        <div class="fgroup">
+          <label class="flabel">Total spaces <span style="color:var(--red)">*</span></label>
+          <input class="finput" type="number" id="locSpaces" placeholder="e.g. 120" min="0">
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="fgroup">
+          <label class="flabel">Event start date <span style="color:var(--red)">*</span></label>
+          <input class="finput" type="date" id="locEventStart">
+        </div>
+        <div class="fgroup">
+          <label class="flabel">Event end date <span style="color:var(--hint);font-size:10px">(leave blank if single day)</span></label>
+          <input class="finput" type="date" id="locEventEnd">
+        </div>
+      </div>
+      <div class="form-grid full" style="margin-bottom:14px">
+        <div class="fgroup">
+          <label class="flabel">Notes (optional)</label>
+          <input class="finput" type="text" id="locNotes" placeholder="e.g. 2 signs posted, check both sides">
+        </div>
+      </div>
+      <button class="btn btn-red" id="addLocBtn" onclick="addLocation()"><i class="ti ti-plus"></i> Add location</button>
+    </div>
+    <div id="lockedBanner" style="display:none;background:#fef3c7;border:1.5px solid #fcd34d;border-radius:10px;padding:12px 16px;margin-bottom:1rem;gap:10px">
+      <i class="ti ti-lock" style="font-size:18px;color:#78350f;flex-shrink:0"></i>
+      <div>
+        <div style="font-size:13px;font-weight:700;color:#78350f" id="lockedTitle">Session completed</div>
+        <div style="font-size:12px;color:#92400e;margin-top:2px">Click <strong>New week</strong> below to start a new drive-about session.</div>
+      </div>
+    </div>
+    <div id="locList"></div>
+    <div class="btn-row">
+      <button class="btn btn-red" onclick="startChecklist()"><i class="ti ti-player-play"></i> Start drive-about</button>
+      <button class="btn btn-ghost" onclick="newSession()" style="flex:0 0 auto;width:auto;padding:11px 20px"><i class="ti ti-plus"></i> New week</button>
+    </div>
+  </div>
+
+  <!-- CHECKLIST -->
+  <div class="section" id="tab-checklist">
+    <div class="card" style="margin-bottom:1rem">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-size:16px;font-weight:700;color:var(--text)" id="cl-date">—</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:3px" id="cl-driver"></div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:22px;font-weight:700;color:var(--red)" id="cl-count">0 / 0</div>
+          <div style="font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.04em">checked</div>
+        </div>
+      </div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-box"><div class="stat-num" id="st-total">0</div><div class="stat-lbl">Locations</div></div>
+      <div class="stat-box"><div class="stat-num" id="st-done" style="color:var(--green)">0</div><div class="stat-lbl">Visited</div></div>
+      <div class="stat-box"><div class="stat-num" id="st-issues" style="color:var(--amber)">0</div><div class="stat-lbl">Issues</div></div>
+    </div>
+    <div class="prog-wrap">
+      <div class="prog-top"><span class="prog-label">Route progress</span><span class="prog-pct" id="prog-pct">0%</span></div>
+      <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+    </div>
+    <div id="checkItems"></div>
+    <button class="btn btn-red" onclick="switchTab('report')" style="margin-top:4px"><i class="ti ti-report"></i> View report</button>
+  </div>
+
+  <!-- REPORT -->
+  <div class="section" id="tab-report">
+    <div class="stats-row">
+      <div class="stat-box"><div class="stat-num" id="r-total">0</div><div class="stat-lbl">Total</div></div>
+      <div class="stat-box"><div class="stat-num" style="color:var(--green)" id="r-ok">0</div><div class="stat-lbl">All clear</div></div>
+      <div class="stat-box"><div class="stat-num" style="color:var(--red-err)" id="r-issues">0</div><div class="stat-lbl">Issues</div></div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon"><i class="ti ti-list-check"></i></div>
+        <div class="card-title">Location summary</div>
+      </div>
+      <div id="reportBody"><p class="empty-msg">Complete the checklist to see your report.</p></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-red" onclick="completeAndNew()"><i class="ti ti-circle-check"></i> Mark complete &amp; start new week</button>
+      <button class="btn btn-ghost btn-sm" onclick="copyReport()" style="flex:0 0 auto;width:auto;padding:11px 20px"><i class="ti ti-copy"></i> Copy</button>
+    </div>
+  </div>
+
+  <!-- HISTORY -->
+  <div class="section" id="tab-history">
+    <div class="card" id="historyCard">
+      <div class="card-header">
+        <div class="card-icon blue"><i class="ti ti-history"></i></div>
+        <div class="card-title">All drive-abouts</div>
+        <button class="btn btn-ghost btn-sm" onclick="loadHistory()" style="margin-left:auto;width:auto"><i class="ti ti-refresh"></i></button>
+      </div>
+      <div id="historyList"><p class="empty-msg">Click refresh to load sessions.</p></div>
+    </div>
+    <div id="historyDetail" style="display:none">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem">
+        <button class="btn btn-ghost btn-sm" onclick="closeHistoryDetail()" style="width:auto"><i class="ti ti-arrow-left"></i> Back</button>
+        <span style="font-size:14px;font-weight:600;color:var(--text)" id="hd-title"></span>
+      </div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-num" id="hd-total">0</div><div class="stat-lbl">Locations</div></div>
+        <div class="stat-box"><div class="stat-num" style="color:var(--green)" id="hd-ok">0</div><div class="stat-lbl">All clear</div></div>
+        <div class="stat-box"><div class="stat-num" style="color:var(--red-err)" id="hd-issues">0</div><div class="stat-lbl">Issues</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon"><i class="ti ti-list-check"></i></div>
+          <div class="card-title">Location summary</div>
+        </div>
+        <div id="hd-body"></div>
+      </div>
+      <button class="btn btn-ghost" onclick="copyHistoryReport()"><i class="ti ti-copy"></i> Copy report</button>
+    </div>
+  </div>
+</div>
+<script>
+var API = 'https://script.google.com/macros/s/AKfycby7rIOXg6hr3qXXjPpEgFzJA_nUogs0O-Ke0nTaYGb07QERWnTNGKNQG1BbqC6Irkv0aQ/exec';
+var SESSION_KEY = 'sda_session_id';
+// Clear any legacy localStorage session data on every load
+try { localStorage.removeItem('sda_session_id'); localStorage.removeItem('stanford_driveabout_v5'); localStorage.removeItem('stanford_driveabout_v4'); localStorage.removeItem('stanford_driveabout_v3'); localStorage.removeItem('stanford_driveabout_v2'); } catch(e) {}
+
+var urlParams = new URLSearchParams(window.location.search);
+var urlSessionId = urlParams.get('session');
+// ONLY use session from URL — never auto-load from localStorage
+// Fresh visit to plain URL = no session, must click New week
+var currentSessionId = urlSessionId || null;
+
+var currentLocations = [];
+var sessionLocked = true; // start locked — only unlocked once session status confirmed from Sheets
+var viewingSession = null;
+var pollTimer = null;
+var isSorting = false;
+var sortLockTimer = null;
+// Track which cards are expanded by location ID
+var expandedIds = {};
+
+// ── UTILS ──
+function showToast(msg, type, dur) {
+  type = type||'success'; dur = dur||3000;
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast '+type; t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, dur);
+}
+// Fire-and-forget writes (no-cors) — for updates where we don't need a response
+function apiWrite(action, data) {
+  data.action = action;
+  return fetch(API, {
+    method: 'POST', mode: 'no-cors',
+    headers: {'Content-Type': 'text/plain'},
+    body: JSON.stringify(data)
+  }).then(function(){ return {success:true}; });
+}
+// Confirmed POST — uses cors, waits for response (for addLocation)
+function apiPost(action, data) {
+  data.action = action;
+  return fetch(API, {
+    method: 'POST',
+    headers: {'Content-Type': 'text/plain'},
+    body: JSON.stringify(data)
+  }).then(function(r){ return r.json(); });
+}
+function apiRead(params) {
+  return fetch(API + '?' + params, {mode:'cors'}).then(function(r){ return r.json(); });
+}
+
+// ── HELPERS ──
+function formatDate(dateStr) {
+  if (!dateStr) return '';
+  var d = new Date(dateStr + 'T12:00:00');
+  return d.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+}
+
+// ── LOCK UI ──
+function updateLockUI() {
+  var addBtn = document.getElementById('addLocBtn');
+  var locName = document.getElementById('locName');
+  var lockedBanner = document.getElementById('lockedBanner');
+  if (sessionLocked) {
+    if (addBtn && !addBtn.innerHTML.includes('spin')) {
+      // Only update if not showing spinner
+      addBtn.disabled = true;
+      addBtn.innerHTML = '<i class="ti ti-lock"></i> Session completed — click New week to start';
+    }
+    if (locName) { locName.disabled = true; locName.placeholder = 'Start a new week to add locations'; }
+    ['locEvent','locSpaces','locNotes'].forEach(function(id){ var el=document.getElementById(id); if(el) el.disabled=true; });
+    if (lockedBanner) lockedBanner.style.display = 'flex';
+  } else {
+    if (addBtn) { addBtn.disabled = false; addBtn.innerHTML = '<i class="ti ti-plus"></i> Add location'; }
+    if (locName) { locName.disabled = false; locName.placeholder = 'e.g. Lot 1 — Serra St entrance'; }
+    ['locEvent','locSpaces','locNotes'].forEach(function(id){ var el=document.getElementById(id); if(el) el.disabled=false; });
+    if (lockedBanner) lockedBanner.style.display = 'none';
+  }
+}
+
+// ── URL SESSION SYNC ──
+function updateURL(sessionId) {
+  if (!sessionId) return;
+  var url = window.location.origin + window.location.pathname + '?session=' + sessionId;
+  window.history.replaceState({}, '', url);
+  // Never persist to localStorage — session must come from URL only
+}
+
+// ── INIT ──
+function init() {
+  // Always start locked — loadCurrentSession will unlock if status is In Progress
+  sessionLocked = true;
+  updateLockUI();
+  if (currentSessionId) {
+    updateURL(currentSessionId);
+    document.getElementById('shareBtn').style.display = '';
+    document.getElementById('liveIndicator').innerHTML = '<span class="live-pill"><span class="live-dot"></span> Live</span>';
+    loadCurrentSession();
+  } else {
+    // No session at all — show locked state prompting New week
+    updateLockUI();
+  }
+}
+
+function startPolling() {
+  if (pollTimer) clearInterval(pollTimer);
+  pollTimer = setInterval(function() {
+    if (currentSessionId && !isSorting) silentRefresh();
+  }, 30000);
+}
+
+// Silent refresh — NEVER re-renders checklist cards, only updates data + stats
+function silentRefresh() {
+  apiRead('action=getLocations&sessionId=' + currentSessionId)
+    .then(function(rows) {
+      if (!Array.isArray(rows) || rows.length < 2) return;
+      var headers = rows[0];
+      var newLocs = rows.slice(1).map(function(r){ return rowToLoc(headers, r); });
+      newLocs.sort(function(a,b){ return a.sortOrder - b.sortOrder; });
+      // Only update locations if we are NOT on the checklist tab (to avoid any interference)
+      var activeTab = document.querySelector('.tab.active');
+      var onChecklist = activeTab && activeTab.textContent.indexOf('Checklist') > -1;
+      if (!onChecklist) {
+        currentLocations = newLocs;
+        var onSetup = activeTab && activeTab.textContent.indexOf('Setup') > -1;
+        var onReport = activeTab && activeTab.textContent.indexOf('Report') > -1;
+        if (onSetup) renderLocList();
+        if (onReport) renderReport();
+      }
+      // Always update stats bar if on checklist
+      if (onChecklist) {
+        // Merge only checked/status from server, never touch DOM cards
+        newLocs.forEach(function(nl) {
+          var el = currentLocations.find(function(l){ return l.id === nl.id; });
+          if (el) { el.checked = nl.checked; el.status = nl.status; }
+        });
+        updateStats();
+      }
+    }).catch(function(){});
+}
+
+// ── SESSION ──
+function loadCurrentSession() {
+  apiRead('action=getSessions')
+    .then(function(rows) {
+      if (!Array.isArray(rows) || rows.length < 2) return;
+      var headers = rows[0];
+      var sessions = rows.slice(1).map(function(r){
+        var o={}; headers.forEach(function(h,i){o[h]=r[i];}); return o;
+      });
+      var match = sessions.find(function(s){ return String(s['ID'])===String(currentSessionId); });
+      if (match) {
+        document.getElementById('driveDate').value = match['Date'] ? String(match['Date']).substring(0,10) : '';
+        document.getElementById('driverName').value = match['Driver'] || '';
+        // Explicitly set lock based on confirmed status from Sheets
+        sessionLocked = (match['Status'] === 'Completed');
+        updateLockUI();
+      } else {
+        // Session ID in localStorage but not found in Sheets — lock it
+        sessionLocked = true;
+        updateLockUI();
+      }
+      return apiRead('action=getLocations&sessionId='+currentSessionId);
+    })
+    .then(function(rows) {
+      if (!rows || !Array.isArray(rows) || rows.length < 2) { renderLocList(); return; }
+      var headers = rows[0];
+      currentLocations = rows.slice(1).map(function(r){ return rowToLoc(headers,r); });
+      currentLocations.sort(function(a,b){ return a.sortOrder-b.sortOrder; });
+      renderLocList();
+      startPolling();
+    })
+    .catch(function(){ renderLocList(); showToast('Could not reach Sheets','error',4000); });
+}
+
+function rowToLoc(headers, row) {
+  var o={}; headers.forEach(function(h,i){o[h]=row[i];}); 
+  return {
+    id: String(o['ID']||''), name: o['Name']||'', event: o['Event']||'',
+    eventDate: o['EventDate']||'',
+    spaces: o['Spaces']||0, notes: o['Notes']||'',
+    checked: o['IsChecked']===true||o['IsChecked']==='TRUE',
+    status: o['SignageStatus']==='All good'?'ok':o['SignageStatus']==='Needs attention'?'warn':o['SignageStatus']==='Sign missing'?'bad':'',
+    issue: o['FieldNotes']||'', sortOrder: parseInt(o['SortOrder'])||0
+  };
+}
+
+function statusToSheet(s) {
+  return s==='ok'?'All good':s==='warn'?'Needs attention':s==='bad'?'Sign missing':'Not checked';
+}
+
+function newSession() {
+  var date = document.getElementById('driveDate').value.trim();
+  var driver = document.getElementById('driverName').value.trim();
+  if (!date) {
+    document.getElementById('driveDate').focus();
+    showToast('Please enter a date first', 'error');
+    return;
+  }
+  if (!driver) {
+    document.getElementById('driverName').focus();
+    showToast('Please enter a driver / team name first', 'error');
+    return;
+  }
+  if (currentLocations.length > 0) {
+    if (!confirm('Start a new week? Current session stays in History.')) return;
+  }
+  var newId = Date.now().toString();
+  currentSessionId = newId;
+  sessionLocked = true; // lock while creating new session
+  currentLocations = [];
+  expandedIds = {};
+  document.getElementById('driveDate').value = date;
+  document.getElementById('driverName').value = '';
+  document.getElementById('shareBtn').style.display = '';
+  document.getElementById('liveIndicator').innerHTML = '<span class="live-pill"><span class="live-dot"></span> Live</span>';
+  sessionLocked = true; // lock while creating
+  updateLockUI();
+  document.getElementById('addLocBtn').innerHTML = '<i class="ti ti-loader-2 spin"></i> Setting up session…';
+  renderLocList();
+  // Create session via GET and wait for confirmation before enabling add button
+  apiRead('action=createSession&id='+newId+'&date='+date+'&driver='+encodeURIComponent(driver))
+    .then(function() {
+      updateURL(newId);
+      sessionLocked = false; // confirmed — unlock
+      updateLockUI();
+      showToast('New session created! Share the URL with your team.', 'success', 5000);
+      startPolling();
+    })
+    .catch(function(){
+      // Even if sheets call fails, still unlock locally so team can work
+      sessionLocked = false;
+      updateLockUI();
+      showToast('Session started locally — Sheets sync may have failed', 'error', 5000);
+      startPolling();
+    });
+}
+
+function saveSessionMeta() {
+  if (!currentSessionId) { newSession(); return; }
+  apiWrite('updateSession', {
+    id: currentSessionId,
+    date: document.getElementById('driveDate').value,
+    driver: document.getElementById('driverName').value.trim()
+  }).then(function(){ showToast('Saved', 'success'); });
+}
+
+function shareSession() {
+  if (!currentSessionId) return;
+  var link = window.location.origin + window.location.pathname + '?session=' + currentSessionId;
+  if (navigator.share) {
+    navigator.share({title:'Drive-About Checklist', url:link}).catch(function(){});
+  } else {
+    navigator.clipboard.writeText(link).then(function(){
+      showToast('Link copied — share with your team!', 'success', 4000);
+    }).catch(function(){ prompt('Copy this link:', link); });
+  }
+}
+
+// ── LOCATIONS ──
+function addLocation() {
+  if (sessionLocked) { showToast('Session is completed — click New week first', 'error'); return; }
+  var date = document.getElementById('driveDate').value.trim();
+  var driver = document.getElementById('driverName').value.trim();
+  if (!date) { document.getElementById('driveDate').focus(); showToast('Date is required', 'error'); return; }
+  if (!driver) { document.getElementById('driverName').focus(); showToast('Driver / Team name is required', 'error'); return; }
+  var name = document.getElementById('locName').value.trim();
+  if (!name) { document.getElementById('locName').focus(); showToast('Location name is required', 'error'); return; }
+  var event = document.getElementById('locEvent').value.trim();
+  if (!event) { document.getElementById('locEvent').focus(); showToast('Event name is required', 'error'); return; }
+  var spaces = document.getElementById('locSpaces').value.trim();
+  if (!spaces) { document.getElementById('locSpaces').focus(); showToast('Total spaces is required', 'error'); return; }
+  var eventStart = document.getElementById('locEventStart').value.trim();
+  if (!eventStart) { document.getElementById('locEventStart').focus(); showToast('Event start date is required', 'error'); return; }
+  if (!currentSessionId) { showToast('Click New week to start a session', 'error'); return; }
+  var btn = document.getElementById('addLocBtn');
+  btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader-2 spin"></i> Adding…';
+  var newId = Date.now().toString();
+  var eventStart = document.getElementById('locEventStart').value.trim();
+  var eventEnd = document.getElementById('locEventEnd').value.trim();
+  var eventDateStr = eventStart ? (eventEnd && eventEnd !== eventStart
+    ? formatDate(eventStart) + ' – ' + formatDate(eventEnd)
+    : formatDate(eventStart)) : '';
+  var loc = {
+    id: newId, name: name,
+    event: document.getElementById('locEvent').value.trim(),
+    eventDate: eventDateStr,
+    spaces: parseInt(document.getElementById('locSpaces').value)||0,
+    notes: document.getElementById('locNotes').value.trim(),
+    checked: false, status: '', issue: '',
+    sortOrder: currentLocations.length + 1
+  };
+  // Add to local array immediately — UI updates right away
+  currentLocations.push(loc);
+  ['locName','locEvent','locSpaces','locNotes','locEventStart','locEventEnd'].forEach(function(id){ document.getElementById(id).value=''; });
+  renderLocList();
+  btn.disabled = false; btn.innerHTML = '<i class="ti ti-plus"></i> Add location';
+  showToast('Location added', 'success');
+  // Save to Sheets via GET
+  apiRead('action=addLocation' +
+    '&id=' + newId +
+    '&sessionId=' + currentSessionId +
+    '&name=' + encodeURIComponent(loc.name) +
+    '&event=' + encodeURIComponent(loc.event) +
+    '&eventDate=' + encodeURIComponent(loc.eventDate || '') +
+    '&spaces=' + loc.spaces +
+    '&notes=' + encodeURIComponent(loc.notes) +
+    '&sortOrder=' + loc.sortOrder
+  ).catch(function(){
+    showToast('Warning: location may not have saved to Sheets', 'error', 4000);
+  });
+}
+
+function removeLocation(id) {
+  if (!confirm('Remove this location?')) return;
+  apiWrite('deleteLocation', {id:id});
+  currentLocations = currentLocations.filter(function(l){ return l.id!==id; });
+  renderLocList();
+}
+
+function moveLocation(index, dir) {
+  var newIndex = index + dir;
+  if (newIndex < 0 || newIndex >= currentLocations.length) return;
+  isSorting = true;
+  if (sortLockTimer) clearTimeout(sortLockTimer);
+  var tmp = currentLocations[index];
+  currentLocations[index] = currentLocations[newIndex];
+  currentLocations[newIndex] = tmp;
+  saveSortOrder();
+  renderLocList();
+}
+
+function saveSortOrder() {
+  var saves = currentLocations.map(function(l,i){
+    l.sortOrder = i+1;
+    return apiWrite('updateLocation', {id:l.id, isChecked:l.checked, signageStatus:statusToSheet(l.status), fieldNotes:l.issue, sortOrder:i+1});
+  });
+  Promise.all(saves).then(function(){
+    sortLockTimer = setTimeout(function(){ isSorting=false; }, 3000);
+  }).catch(function(){ sortLockTimer = setTimeout(function(){ isSorting=false; }, 3000); });
+}
+
+function renderLocList() {
+  var el = document.getElementById('locList');
+  if (!currentLocations.length) {
+    el.innerHTML = '<p class="empty-msg" style="margin-bottom:1rem">No locations yet.</p>';
+    return;
+  }
+  var rows = currentLocations.map(function(l,i){
+    return '<div class="loc-item" draggable="true" data-id="'+l.id+'" data-index="'+i+'">' +
+      '<div class="drag-handle"><span></span><span></span><span></span></div>' +
+      '<div class="loc-num">'+(i+1)+'</div>' +
+      '<div class="loc-info"><div class="loc-name">'+l.name+'</div>' +
+      '<div class="loc-meta">'+(l.event||'No event')+(l.eventDate?' · '+l.eventDate:'')+' · '+(l.spaces||'—')+' spaces'+(l.notes?' · '+l.notes:'')+'</div></div>' +
+      '<div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0">' +
+        '<button class="icon-btn" style="width:26px;height:26px;font-size:13px" onclick="moveLocation('+i+',-1)"'+(i===0?' disabled':'')+'><i class="ti ti-chevron-up"></i></button>' +
+        '<button class="icon-btn" style="width:26px;height:26px;font-size:13px" onclick="moveLocation('+i+',1)"'+(i===currentLocations.length-1?' disabled':'')+'><i class="ti ti-chevron-down"></i></button>' +
+      '</div>' +
+      '<button class="del-btn" onclick="removeLocation(\''+l.id+'\')"><i class="ti ti-trash"></i></button>' +
+    '</div>';
+  }).join('');
+  el.innerHTML = '<div class="card" style="padding:1rem 1.25rem;margin-bottom:1rem">' +
+    '<div class="card-header"><div class="card-icon"><i class="ti ti-map-pins"></i></div>' +
+    '<div class="card-title">Locations ('+currentLocations.length+')</div>' +
+    '<span style="margin-left:auto;font-size:11px;color:var(--hint)">drag or arrows to reorder</span></div>' +
+    '<div class="loc-list" id="sortableList">'+rows+'</div></div>';
+  initDragDrop();
+}
+
+function initDragDrop() {
+  var list = document.getElementById('sortableList');
+  if (!list) return;
+  var items = list.querySelectorAll('.loc-item');
+  var dragSrc = null;
+  items.forEach(function(item){
+    item.addEventListener('dragstart', function(e){
+      dragSrc = this; isSorting = true;
+      if (sortLockTimer) clearTimeout(sortLockTimer);
+      this.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    item.addEventListener('dragend', function(){
+      this.classList.remove('dragging');
+      list.querySelectorAll('.loc-item').forEach(function(i){ i.classList.remove('drag-over'); });
+    });
+    item.addEventListener('dragover', function(e){
+      e.preventDefault();
+      list.querySelectorAll('.loc-item').forEach(function(i){ i.classList.remove('drag-over'); });
+      if (this !== dragSrc) this.classList.add('drag-over');
+    });
+    item.addEventListener('drop', function(e){
+      e.preventDefault();
+      if (this === dragSrc) return;
+      var from = parseInt(dragSrc.dataset.index);
+      var to = parseInt(this.dataset.index);
+      var moved = currentLocations.splice(from,1)[0];
+      currentLocations.splice(to,0,moved);
+      saveSortOrder();
+      renderLocList();
+    });
+  });
+}
+
+// ── CHECKLIST ──
+function startChecklist() {
+  var date = document.getElementById('driveDate').value.trim();
+  var driver = document.getElementById('driverName').value.trim();
+  if (!date) {
+    document.getElementById('driveDate').focus();
+    showToast('Date is required', 'error'); return;
+  }
+  if (!driver) {
+    document.getElementById('driverName').focus();
+    showToast('Driver / Team name is required', 'error'); return;
+  }
+  if (!currentLocations.length) { showToast('Add at least one location first', 'error'); return; }
+  switchTab('checklist');
+}
+
+function renderChecklist() {
+  updateStats();
+  var dateVal = document.getElementById('driveDate').value;
+  var d = dateVal ? new Date(dateVal+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}) : 'No date set';
+  document.getElementById('cl-date').textContent = d;
+  document.getElementById('cl-driver').textContent = document.getElementById('driverName').value||'Stanford Parking Operations';
+  var el = document.getElementById('checkItems');
+  if (!currentLocations.length) { el.innerHTML='<p class="empty-msg">No locations added yet.</p>'; return; }
+  el.innerHTML = currentLocations.map(function(l,i){
+    var sc = l.status==='ok'?'s-ok':l.status==='warn'?'s-warn':l.status==='bad'?'s-bad':l.checked?'s-done':'';
+    var exp = expandedIds[l.id] ? ' expanded' : '';
+    return '<div class="cl-card '+sc+exp+'" id="lc-'+l.id+'">' +
+      '<div class="cl-top">' +
+        '<div class="cl-num">'+(i+1)+'</div>' +
+        '<div class="cl-info"><div class="cl-name">'+l.name+'</div>' +
+        '<div class="cl-sub">'+(l.event||'No event')+(l.eventDate?' · '+l.eventDate:'')+' · '+(l.spaces||'—')+' spaces</div></div>' +
+        '<div class="cl-actions">' +
+          '<button class="icon-btn" onclick="toggleExpand(\''+l.id+'\')"><i class="ti ti-notes"></i></button>' +
+          '<button class="chk-btn '+(l.checked?'done':'')+'" id="chk-'+l.id+'" onclick="toggleCheck(\''+l.id+'\')"><i class="ti ti-check"></i></button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="cl-expand">' +
+        '<div class="expand-label">Signage condition</div>' +
+        '<div class="chips">' +
+          '<button class="chip ok '+(l.status==='ok'?'on':'')+'" id="chip-ok-'+l.id+'" onclick="setStatus(\''+l.id+'\',\'ok\')"><i class="ti ti-circle-check"></i> All good</button>' +
+          '<button class="chip warn '+(l.status==='warn'?'on':'')+'" id="chip-warn-'+l.id+'" onclick="setStatus(\''+l.id+'\',\'warn\')"><i class="ti ti-alert-triangle"></i> Needs attention</button>' +
+          '<button class="chip bad '+(l.status==='bad'?'on':'')+'" id="chip-bad-'+l.id+'" onclick="setStatus(\''+l.id+'\',\'bad\')"><i class="ti ti-x"></i> Sign missing</button>' +
+        '</div>' +
+        '<div class="fgroup"><label class="flabel">Issue / notes</label>' +
+          '<textarea class="finput" id="issue-'+l.id+'" placeholder="Describe any issue…" oninput="setIssue(\''+l.id+'\',this.value)">'+l.issue+'</textarea>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function updateStats() {
+  var locs = currentLocations;
+  var done = locs.filter(function(l){ return l.checked; }).length;
+  var issues = locs.filter(function(l){ return l.status==='warn'||l.status==='bad'; }).length;
+  var pct = locs.length ? Math.round(done/locs.length*100) : 0;
+  document.getElementById('cl-count').textContent = done+' / '+locs.length;
+  document.getElementById('st-total').textContent = locs.length;
+  document.getElementById('st-done').textContent = done;
+  document.getElementById('st-issues').textContent = issues;
+  document.getElementById('prog-fill').style.width = pct+'%';
+  document.getElementById('prog-pct').textContent = pct+'%';
+}
+
+function toggleExpand(id) {
+  expandedIds[id] = !expandedIds[id];
+  var card = document.getElementById('lc-'+id);
+  if (card) card.classList.toggle('expanded', expandedIds[id]);
+}
+
+// toggleCheck and setStatus NEVER call renderChecklist — update DOM in place only
+function toggleCheck(id) {
+  var l = currentLocations.find(function(x){ return x.id===id; });
+  if (!l) return;
+  l.checked = !l.checked;
+  apiWrite('updateLocation', {id:id, isChecked:l.checked, signageStatus:statusToSheet(l.status), fieldNotes:l.issue});
+  // Update just the button
+  var btn = document.getElementById('chk-'+id);
+  if (btn) btn.className = 'chk-btn'+(l.checked?' done':'');
+  // Update card border color
+  updateCardClass(id, l);
+  updateStats();
+}
+
+function setStatus(id, status) {
+  var l = currentLocations.find(function(x){ return x.id===id; });
+  if (!l) return;
+  l.status = l.status===status ? '' : status;
+  if (l.status) l.checked = true;
+  apiWrite('updateLocation', {id:id, isChecked:l.checked, signageStatus:statusToSheet(l.status), fieldNotes:l.issue});
+  expandedIds[id] = true;
+  // Update chips in place
+  ['ok','warn','bad'].forEach(function(s){
+    var chip = document.getElementById('chip-'+s+'-'+id);
+    if (chip) chip.className = 'chip '+s+(l.status===s?' on':'');
+  });
+  // Update check button
+  var btn = document.getElementById('chk-'+id);
+  if (btn) btn.className = 'chk-btn'+(l.checked?' done':'');
+  // Update card border
+  updateCardClass(id, l);
+  // Keep card expanded
+  var card = document.getElementById('lc-'+id);
+  if (card) card.classList.add('expanded');
+  updateStats();
+}
+
+function updateCardClass(id, l) {
+  var card = document.getElementById('lc-'+id);
+  if (!card) return;
+  var sc = l.status==='ok'?'s-ok':l.status==='warn'?'s-warn':l.status==='bad'?'s-bad':l.checked?'s-done':'';
+  card.className = 'cl-card'+( sc?' '+sc:'')+( expandedIds[id]?' expanded':'');
+}
+
+function setIssue(id, val) {
+  var l = currentLocations.find(function(x){ return x.id===id; });
+  if (l) l.issue = val;
+  apiWrite('updateLocation', {id:id, isChecked:l.checked, signageStatus:statusToSheet(l.status), fieldNotes:val});
+}
+
+// ── REPORT ──
+function renderReport() {
+  var locs = currentLocations;
+  var ok = locs.filter(function(l){ return l.status==='ok'; }).length;
+  var issues = locs.filter(function(l){ return l.status==='warn'||l.status==='bad'; }).length;
+  document.getElementById('r-total').textContent = locs.length;
+  document.getElementById('r-ok').textContent = ok;
+  document.getElementById('r-issues').textContent = issues;
+  var dateVal = document.getElementById('driveDate').value;
+  var d = dateVal ? new Date(dateVal+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}) : '';
+  var driver = document.getElementById('driverName').value;
+  var el = document.getElementById('reportBody');
+  if (!locs.length) { el.innerHTML='<p class="empty-msg">Complete the checklist to see your report.</p>'; return; }
+  el.innerHTML = '<div style="font-size:12px;color:var(--muted);margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid #f3f4f6">'+d+(driver?' · '+driver:'')+' · '+locs.length+' locations</div>' +
+    locs.map(function(l,i){
+      var badge = l.status==='ok'?'<span class="badge badge-ok">All clear</span>':
+                  l.status==='warn'?'<span class="badge badge-warn">Needs attention</span>':
+                  l.status==='bad'?'<span class="badge badge-bad">Sign missing</span>':
+                  '<span class="badge badge-skip">Not checked</span>';
+      return '<div class="report-item"><div style="flex:1;min-width:0"><div class="ri-name">'+(i+1)+'. '+l.name+'</div><div class="ri-sub">'+(l.event||'—')+' · '+(l.spaces||'—')+' spaces</div>'+(l.issue?'<div class="ri-note"><i class="ti ti-message-circle" style="font-size:12px"></i> '+l.issue+'</div>':'')+'</div><div>'+badge+'</div></div>';
+    }).join('');
+}
+
+function completeAndNew() {
+  if (!currentLocations.length) { showToast('No locations to complete','error'); return; }
+  if (!confirm('Mark complete and start a new week?')) return;
+  var oldSessionId = currentSessionId;
+  var oldLocs = currentLocations.slice(); // save before clearing
+  sessionLocked = true; // lock immediately so no locations can be added
+  var newId = Date.now().toString();
+  var date = new Date().toISOString().split('T')[0];
+  var driver = document.getElementById('driverName').value.trim();
+  // Mark old session complete
+  apiWrite('updateSession', {id:oldSessionId, status:'Completed'});
+  currentSessionId = newId;
+    currentLocations = [];
+  expandedIds = {};
+  document.getElementById('driveDate').value = date;
+  document.getElementById('driverName').value = driver;
+  document.getElementById('shareBtn').style.display = '';
+  document.getElementById('liveIndicator').innerHTML = '<span class="live-pill"><span class="live-dot"></span> Live</span>';
+  document.getElementById('addLocBtn').disabled = true;
+  document.getElementById('addLocBtn').innerHTML = '<i class="ti ti-loader-2 spin"></i> Setting up session…';
+  renderLocList();
+  switchTab('setup');
+  // Find locations that need attention or are missing — carry them over
+  var carryOver = oldLocs.filter(function(l){
+    return l.status === 'warn' || l.status === 'bad';
+  });
+
+  // Create new session via GET and wait for confirmation
+  apiRead('action=createSession&id='+newId+'&date='+date+'&driver='+encodeURIComponent(driver))
+    .then(function() {
+      document.getElementById('addLocBtn').disabled = false;
+      document.getElementById('addLocBtn').innerHTML = '<i class="ti ti-plus"></i> Add location';
+      // Add carried-over locations to new session
+      if (carryOver.length > 0) {
+        var carried = [];
+        var promises = carryOver.map(function(l, i) {
+          var carryId = (parseInt(newId) + i + 1).toString();
+          var carryLoc = {
+            id: carryId, name: l.name, event: l.event,
+            spaces: l.spaces, notes: l.notes,
+            checked: false, status: '', issue: '',
+            sortOrder: i + 1,
+            carriedOver: true
+          };
+          carried.push(carryLoc);
+          return apiRead('action=addLocation' +
+            '&id=' + carryId +
+            '&sessionId=' + newId +
+            '&name=' + encodeURIComponent(l.name) +
+            '&event=' + encodeURIComponent(l.event) +
+            '&eventDate=' + encodeURIComponent(l.eventDate || '') +
+            '&spaces=' + l.spaces +
+            '&notes=' + encodeURIComponent('Carried from last week: ' + (l.issue||'')) +
+            '&sortOrder=' + (i+1)
+          );
+        });
+        Promise.all(promises).then(function() {
+          updateURL(newId);
+          currentLocations = carried;
+          renderLocList();
+          showToast('Done! '+carryOver.length+' unresolved location'+(carryOver.length>1?'s':'')+' carried over. Share the new URL!', 'success', 6000);
+        }).catch(function(){
+          showToast('Done! But carry-over may not have saved.', 'error', 5000);
+        });
+      } else {
+        updateURL(newId);
+        showToast('Done! New week started. Share the new URL!', 'success', 5000);
+      }
+      startPolling();
+    })
+    .catch(function(){
+      document.getElementById('addLocBtn').disabled = false;
+      document.getElementById('addLocBtn').innerHTML = '<i class="ti ti-plus"></i> Add location';
+      showToast('Warning: session may not have saved', 'error', 5000);
+    });
+}
+
+function buildReportText() {
+  var dateVal = document.getElementById('driveDate').value;
+  var d = dateVal ? new Date(dateVal+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}) : '';
+  var driver = document.getElementById('driverName').value;
+  var txt = 'STANFORD PARKING — DRIVE-ABOUT SIGNAGE CHECKLIST\nDate: '+d+'\n';
+  if (driver) txt += 'Team: '+driver+'\n'; txt += '\n';
+  currentLocations.forEach(function(l,i){
+    var st = l.status==='ok'?'All clear':l.status==='warn'?'Needs attention':l.status==='bad'?'Sign missing':'Not checked';
+    txt += (i+1)+'. '+l.name+'\n   Event: '+(l.event||'—')+' | Spaces: '+(l.spaces||'—')+'\n   Status: '+st+'\n';
+    if (l.issue) txt += '   Notes: '+l.issue+'\n'; txt += '\n';
+  });
+  return txt;
+}
+
+function copyReport() {
+  navigator.clipboard.writeText(buildReportText()).then(function(){ showToast('Report copied!','success'); });
+}
+
+// ── HISTORY ──
+function loadHistory() {
+  document.getElementById('historyList').innerHTML = '<p class="empty-msg"><i class="ti ti-loader-2 spin"></i> Loading…</p>';
+  apiRead('action=getSessions')
+    .then(function(rows) {
+      if (!Array.isArray(rows) || rows.length < 2) {
+        document.getElementById('historyList').innerHTML = '<p class="empty-msg">No sessions found.</p>';
+        return;
+      }
+      var headers = rows[0];
+      var sessions = rows.slice(1).map(function(r){
+        var o={}; headers.forEach(function(h,i){o[h]=r[i];}); return o;
+      }).filter(function(s){ return s['Status'] === 'Completed'; }).sort(function(a,b){ return new Date(b['CreatedAt'])-new Date(a['CreatedAt']); });
+      if (!sessions.length) {
+        document.getElementById('historyList').innerHTML = '<p class="empty-msg">No completed sessions yet. Complete a drive-about to see it here.</p>';
+        return;
+      }
+      document.getElementById('historyList').innerHTML = sessions.map(function(s){
+        var sid = String(s['ID']);
+        var sdate = s['Date'] ? String(s['Date']).substring(0,10) : '';
+        var sdriver = s['Driver'] || '';
+        var d = sdate ? new Date(sdate+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'}) : 'No date';
+        var isActive = sid === String(currentSessionId);
+        var badge = isActive
+          ? '<span style="background:#d1fae5;color:#065f46;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;white-space:nowrap">Active</span>'
+          : '<span style="background:#f4f4f5;color:#6b7280;border-radius:20px;padding:3px 10px;font-size:11px;white-space:nowrap">'+(s['Status']||'Done')+'</span>';
+        return '<div class="history-item" onclick="openHistoryDetail(\''+sid+'\',\''+sdate+'\',\''+sdriver+'\')">'+
+          '<div style="flex:1"><div style="font-size:14px;font-weight:600;color:var(--text)">'+d+'</div>'+
+          '<div style="font-size:12px;color:var(--muted);margin-top:2px">'+(sdriver||'No driver')+'</div></div>'+
+          badge+'<i class="ti ti-chevron-right" style="font-size:16px;color:var(--hint);margin-left:8px"></i></div>';
+      }).join('');
+    })
+    .catch(function(){
+      document.getElementById('historyList').innerHTML = '<p class="empty-msg">Could not load — check connection.</p>';
+    });
+}
+
+var currentDetailSessionId = null;
+function openHistoryDetail(sid, sdate, sdriver) {
+  currentDetailSessionId = sid;
+  document.getElementById('historyCard').style.display = 'none';
+  document.getElementById('historyDetail').style.display = 'block';
+  var d = sdate ? new Date(sdate+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}) : 'No date';
+  document.getElementById('hd-title').textContent = d+(sdriver?' · '+sdriver:'');
+  document.getElementById('hd-body').innerHTML = '<p class="empty-msg"><i class="ti ti-loader-2 spin"></i> Loading…</p>';
+  apiRead('action=getLocations&sessionId='+sid)
+    .then(function(rows){
+      if (!Array.isArray(rows)||rows.length<2){document.getElementById('hd-body').innerHTML='<p class="empty-msg">No locations found.</p>';return;}
+      var headers=rows[0];
+      var locs=rows.slice(1).map(function(r){return rowToLoc(headers,r);});
+      locs.sort(function(a,b){return a.sortOrder-b.sortOrder;});
+      var ok=locs.filter(function(l){return l.status==='ok';}).length;
+      var issues=locs.filter(function(l){return l.status==='warn'||l.status==='bad';}).length;
+      document.getElementById('hd-total').textContent=locs.length;
+      document.getElementById('hd-ok').textContent=ok;
+      document.getElementById('hd-issues').textContent=issues;
+      viewingSession={locs:locs,date:sdate,driver:sdriver};
+      document.getElementById('hd-body').innerHTML=locs.map(function(l,i){
+        var badge=l.status==='ok'?'<span class="badge badge-ok">All clear</span>':
+                  l.status==='warn'?'<span class="badge badge-warn">Needs attention</span>':
+                  l.status==='bad'?'<span class="badge badge-bad">Sign missing</span>':
+                  '<span class="badge badge-skip">Not checked</span>';
+        return '<div class="report-item"><div style="flex:1;min-width:0"><div class="ri-name">'+(i+1)+'. '+l.name+'</div><div class="ri-sub">'+(l.event||'—')+(l.eventDate?' · '+l.eventDate:'')+' · '+(l.spaces||'—')+' spaces</div>'+(l.issue?'<div class="ri-note"><i class="ti ti-message-circle" style="font-size:12px"></i> '+l.issue+'</div>':'')+'</div><div>'+badge+'</div></div>';
+      }).join('');
+    }).catch(function(){document.getElementById('hd-body').innerHTML='<p class="empty-msg">Error loading.</p>';});
+}
+
+function closeHistoryDetail() {
+  viewingSession=null;
+  document.getElementById('historyCard').style.display='';
+  document.getElementById('historyDetail').style.display='none';
+}
+
+function deleteSession(sid) {
+  if (!confirm('Delete this session and all its locations? This cannot be undone.')) return;
+  apiWrite('deleteSession', {id: sid}).then(function() {
+    showToast('Session deleted', 'success');
+    closeHistoryDetail();
+    loadHistory();
+  });
+}
+
+function copyHistoryReport() {
+  if (!viewingSession) return;
+  var d = viewingSession.date ? new Date(viewingSession.date+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}) : '';
+  var txt = 'STANFORD PARKING — DRIVE-ABOUT SIGNAGE CHECKLIST\nDate: '+d+'\n';
+  if (viewingSession.driver) txt += 'Team: '+viewingSession.driver+'\n'; txt += '\n';
+  viewingSession.locs.forEach(function(l,i){
+    var st=l.status==='ok'?'All clear':l.status==='warn'?'Needs attention':l.status==='bad'?'Sign missing':'Not checked';
+    txt+=(i+1)+'. '+l.name+'\n   Event: '+(l.event||'—')+' | Spaces: '+(l.spaces||'—')+'\n   Status: '+st+'\n';
+    if(l.issue)txt+='   Notes: '+l.issue+'\n'; txt+='\n';
+  });
+  navigator.clipboard.writeText(txt).then(function(){showToast('Report copied!','success');});
+}
+
+// ── TABS ──
+function switchTab(t) {
+  document.querySelectorAll('.tab').forEach(function(el,i){
+    el.classList.toggle('active',['setup','checklist','report','history'][i]===t);
+  });
+  document.querySelectorAll('.section').forEach(function(el){ el.classList.remove('active'); });
+  document.getElementById('tab-'+t).classList.add('active');
+  if (t==='checklist') renderChecklist();
+  if (t==='report') renderReport();
+  if (t==='history') { closeHistoryDetail(); loadHistory(); }
+}
+
+init();
+</script>
+</body>
+</html>
