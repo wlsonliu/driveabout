@@ -563,7 +563,13 @@ function addLocation() {
     checked: false, status: '', issue: '',
     sortOrder: currentLocations.length + 1
   };
-  // Save to Sheets FIRST, then update UI
+  // Add to local array immediately — UI updates right away
+  currentLocations.push(loc);
+  ['locName','locEvent','locSpaces','locNotes','locEventStart','locEventEnd'].forEach(function(id){ document.getElementById(id).value=''; });
+  renderLocList();
+  btn.disabled = false; btn.innerHTML = '<i class="ti ti-plus"></i> Add location';
+  showToast('Location added', 'success');
+  // Save to Sheets in background
   apiRead('action=addLocation&id='+newId+
     '&sessionId='+currentSessionId+
     '&name='+encodeURIComponent(loc.name)+
@@ -572,21 +578,7 @@ function addLocation() {
     '&spaces='+loc.spaces+
     '&notes='+encodeURIComponent(loc.notes)+
     '&sortOrder='+loc.sortOrder
-  ).then(function(res) {
-    // Use the ID confirmed by the server
-    var confirmedId = (res && res.id) ? String(res.id) : newId;
-    loc.id = confirmedId;
-    currentLocations.push(loc);
-    ['locName','locEvent','locSpaces','locNotes','locEventStart','locEventEnd'].forEach(function(id){ document.getElementById(id).value=''; });
-    renderLocList();
-    btn.disabled = false; btn.innerHTML = '<i class="ti ti-plus"></i> Add location';
-    showToast('Location added', 'success');
-  }).catch(function(){
-    // Still add locally even if sheets fails
-    currentLocations.push(loc);
-    ['locName','locEvent','locSpaces','locNotes','locEventStart','locEventEnd'].forEach(function(id){ document.getElementById(id).value=''; });
-    renderLocList();
-    btn.disabled = false; btn.innerHTML = '<i class="ti ti-plus"></i> Add location';
+  ).catch(function(){
     showToast('Warning: location may not have saved to Sheets', 'error', 4000);
   });
 }
