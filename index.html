@@ -579,17 +579,17 @@ function addLocation() {
   renderLocList();
   btn.disabled = false; btn.innerHTML = '<i class="ti ti-plus"></i> Add location';
   showToast('Location added', 'success');
-  // Save to Sheets via confirmed POST
-  apiPost('addLocation', {
-    id: newId,
-    sessionId: currentSessionId,
-    name: loc.name,
-    event: loc.event,
-    eventDate: loc.eventDate || '',
-    spaces: loc.spaces,
-    notes: loc.notes,
-    sortOrder: loc.sortOrder
-  }).catch(function(){
+  // Save to Sheets via GET
+  apiRead('action=addLocation' +
+    '&id=' + newId +
+    '&sessionId=' + currentSessionId +
+    '&name=' + encodeURIComponent(loc.name) +
+    '&event=' + encodeURIComponent(loc.event) +
+    '&eventDate=' + encodeURIComponent(loc.eventDate || '') +
+    '&spaces=' + loc.spaces +
+    '&notes=' + encodeURIComponent(loc.notes) +
+    '&sortOrder=' + loc.sortOrder
+  ).catch(function(){
     showToast('Warning: location may not have saved to Sheets', 'error', 4000);
   });
 }
@@ -873,16 +873,16 @@ function completeAndNew() {
             carriedOver: true
           };
           carried.push(carryLoc);
-          return apiPost('addLocation', {
-            id: carryId,
-            sessionId: newId,
-            name: l.name,
-            event: l.event,
-            eventDate: l.eventDate || '',
-            spaces: l.spaces,
-            notes: '⚠️ Carried from last week: ' + (l.issue||''),
-            sortOrder: i+1
-          });
+          return apiRead('action=addLocation' +
+            '&id=' + carryId +
+            '&sessionId=' + newId +
+            '&name=' + encodeURIComponent(l.name) +
+            '&event=' + encodeURIComponent(l.event) +
+            '&eventDate=' + encodeURIComponent(l.eventDate || '') +
+            '&spaces=' + l.spaces +
+            '&notes=' + encodeURIComponent('Carried from last week: ' + (l.issue||'')) +
+            '&sortOrder=' + (i+1)
+          );
         });
         Promise.all(promises).then(function() {
           updateURL(newId);
