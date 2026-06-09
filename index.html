@@ -569,17 +569,16 @@ function addLocation() {
   renderLocList();
   btn.disabled = false; btn.innerHTML = '<i class="ti ti-plus"></i> Add location';
   showToast('Location added', 'success');
-  // Save to Sheets in background
-  apiRead('action=addLocation&id='+newId+
-    '&sessionId='+currentSessionId+
-    '&name='+encodeURIComponent(loc.name)+
-    '&event='+encodeURIComponent(loc.event)+
-    '&eventDate='+encodeURIComponent(loc.eventDate||'')+
-    '&spaces='+loc.spaces+
-    '&notes='+encodeURIComponent(loc.notes)+
-    '&sortOrder='+loc.sortOrder
-  ).catch(function(){
-    showToast('Warning: location may not have saved to Sheets', 'error', 4000);
+  // Save to Sheets via POST (handles special chars in eventDate)
+  apiWrite('addLocation', {
+    id: newId,
+    sessionId: currentSessionId,
+    name: loc.name,
+    event: loc.event,
+    eventDate: loc.eventDate || '',
+    spaces: loc.spaces,
+    notes: loc.notes,
+    sortOrder: loc.sortOrder
   });
 }
 
